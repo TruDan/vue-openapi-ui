@@ -1,0 +1,34 @@
+// $
+@import "~quasar/src/css/helpers/string";
+@import "~quasar/src/css/helpers/math";
+
+@each $nameRaw, $size in $sizes {
+  $name: -#{$nameRaw};
+  $noProcNotZero: $size > 0;
+  @media (min-width: $size) {
+    th, td {
+      .test {
+        width: 100px;
+      }
+
+      &#{str-fe('.col<name>', $name, $noProcNotZero)} {
+        &-auto,
+        &-grow {
+          width: auto;
+        }
+
+        &-shrink {
+          width: 1%;
+        }
+      }
+
+      @for $i from 0 through $flex-cols {
+        $ic: quote('' + $i);
+
+        &#{str-fe('.col<name>-<i>', $name, $noProcNotZero, $ic)} {
+          width: toFixed(percentage($i / $flex-cols), 10000);
+        }
+      }
+    }
+  }
+}

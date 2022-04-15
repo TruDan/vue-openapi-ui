@@ -1,0 +1,19 @@
+{
+  "title": "My APIs",
+  "theme": {
+    "primary": "#38B832",
+    "secondary": "#000000",
+    "accent": "#D8B67C"
+  },
+  "dark": false,
+  "darkToggle": true,
+  "specs": [
+    {
+      "name": "Swagger Petstore v3",
+      "url": "https://petstore3.swagger.io/api/v3/openapi.json"
+    }
+  ],
+  "icons": {
+    "folder-root": "code-json"
+  }
+}

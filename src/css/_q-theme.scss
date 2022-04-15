@@ -1,0 +1,10 @@
+// $
+
+@each $name in $extraColors {
+  .bg-#{$name} {
+    background-color: var(--q-#{$name});
+  }
+  .text-#{$name} {
+    color: var(--q-#{$name});
+  }
+}

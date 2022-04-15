@@ -1,0 +1,161 @@
+// $
+// values are default one from jv-light template
+@use "sass:map";
+@use "sass:string";
+@import "variables";
+
+@function jv-flatten-merge-name($name, $basename) {
+  @if string.length($basename) > 0 {
+    @return #{$basename}-#{$name};
+  } @else {
+    @return $name;
+  }
+}
+
+@function jv-flatten-vars($jvTheme, $basename: "") {
+  $flattened: ();
+  @each $name, $value in $jvTheme {
+    $flatName: jv-flatten-merge-name(jv-trim-end($name), jv-trim-end($basename));
+
+    @if type-of($value) == map {
+      $innerLevel: jv-flatten-vars($value, $flatName);
+      $flattened: map.merge($flattened, $innerLevel);
+    } @else {
+      $flattened: map.set($flattened, $flatName, $value);
+    }
+  }
+
+  @return $flattened;
+}
+
+@function jv-flatten-deep-merge($map, $key, $value) {
+  @if string.length($key) > 0 {
+    @return map.deep-merge($map, (
+      #{$key}: $value
+    ));
+  } @else {
+    @return map.deep-merge($map, $value);
+  }
+}
+
+@function jv-trim-end($haystack, $needle: '&') {
+  @if string.slice($haystack, string.length($haystack) - string.length($needle) + 1) == $needle {
+    @return string.slice($haystack, 0, string.length($haystack) - string.length($needle));
+  }
+  @return $haystack;
+}
+@function jv-flatten($jvTheme, $basename: "") {
+  $flattened: ();
+  @each $name, $value in $jvTheme {
+    @if type-of($value) == map {
+      $innerLevel: jv-flatten($value, jv-flatten-merge-name(jv-trim-end($name), jv-trim-end($basename)));
+      $flattened: map.deep-merge($flattened, (
+        #{$name}: $innerLevel
+      ));
+    } @else if $name == "bg" {
+      $flattened: map.deep-merge($flattened, (
+        background-color: var(--jv-#{jv-flatten-merge-name($name, $basename)})
+      ))
+    } @else if $name == "fg" {
+      $flattened: map.deep-merge($flattened, (
+        color: var(--jv-#{jv-flatten-merge-name($name, $basename)})
+      ))
+    } @else if type-of($value) == color {
+      $flattened: jv-flatten-deep-merge($flattened, $name, (
+        color: var(--jv-#{jv-flatten-merge-name($name, $basename)})
+      ))
+    } @else {
+      @error "[JV] UNKNOWN TYPE: " type-of($value)
+    }
+  }
+
+  @return $flattened;
+}
+
+
+@mixin json-viewer-vars($jvTheme) {
+  $jvThemeVars: jv-flatten-vars($jvTheme);
+  @each $name, $value in $jvThemeVars {
+    --jv-#{$name}: #{$value};
+  }
+}
+
+@mixin jv-classes($map, $classPrefix: 'jv', $basename: '') {
+  @each $key, $value in $map {
+    @if type-of($value) == 'map' {
+      $_selector: '.' + #{jv-flatten-merge-name(jv-trim-end($key), $classPrefix)};
+
+      @if string.slice($basename, string.length($basename)) == '&' {
+        $_selector: '&' + #{$_selector};
+      }
+
+      #{$_selector} {
+        $_basename: jv-flatten-merge-name($key, jv-trim-end($basename));
+        @include jv-classes($value, $classPrefix, $_basename) using($k, $v, $b) {
+          @content(jv-trim-end($k), $v, jv-trim-end($b));
+        }
+      }
+    } @else {
+      @content(jv-trim-end($key), $value, jv-trim-end($basename));
+    }
+  }
+}
+
+@each $name, $jvTheme in $jsonViewerThemes {
+  .jv-#{$name},
+  .jv-container.jv-#{$name},
+  .q-#{$name} .jv-container,
+  .body--#{$name} .jv-container {
+    @include json-viewer-vars($jvTheme);
+  }
+}
+
+.jv-container {
+  $_jsonViewerMergedThemes: ();
+
+  @each $name, $jvTheme in $jsonViewerThemes {
+    $_jsonViewerMergedThemes: map.deep-merge($_jsonViewerMergedThemes, $jvTheme);
+  }
+
+  $_jsonViewerElements: jv-flatten($_jsonViewerMergedThemes);
+
+  &.jv-light, &.jv-dark {
+    white-space: nowrap;
+    font-size: 14px;
+    font-family: Consolas, Menlo, Courier, monospace;
+
+    .jv-node {
+      user-select: text;
+      &::after {
+        user-select: text;
+
+      }
+    }
+
+    .jv-ellipsis {
+      vertical-align: unset !important;
+      margin: unset !important;
+    }
+
+    .jv-toggle {
+      //background-image: url(./icon.svg);
+      background-repeat: no-repeat;
+      background-size: contain;
+      background-position: center center;
+      cursor: pointer;
+      width: 10px;
+      height: 10px;
+      margin-right: 2px;
+      display: inline-block;
+      transition: transform 0.1s;
+
+      &.open {
+        transform: rotate(90deg)
+      }
+    }
+
+    @include jv-classes($_jsonViewerElements) using($key, $value, $basename) {
+      #{$key}: $value !important;
+    }
+  }
+}

@@ -1,0 +1,55 @@
+// $
+$extraColors: (get, post, put, delete, head, options, patch);
+
+$jsonViewerThemes: (
+  light: (
+    bg: #fff,
+    fg: #525252,
+    toggle:(
+      fg: #eee,
+    ),
+    ellipsis:(
+      bg: #eee,
+      fg: #999,
+    ),
+    button: #49b3ff,
+    key: #111111,
+    'item&': (
+      array: #111111,
+      boolean: #fc1e70,
+      function: #067bca,
+      number: #fc1e70,
+      number-float: #fc1e70,
+      number-integer: #fc1e70,
+      object: #111111,
+      undefined: #e08331,
+      string: #42b983,
+      link: #0366d6,
+    )
+  ),
+  dark: (
+    bg: $dark,
+    fg: #dcdcdc,
+    toggle:(
+      fg: #888,
+    ),
+    ellipsis:(
+      bg: $dimmed-background,
+      fg: #999,
+    ),
+    button: #49b3ff,
+    key: #569cd6,
+    'item&': (
+      array: #dcdcdc,
+      boolean: #fc1e70,
+      function: #dcdcdc,
+      number: #b8d7a3,
+      number-float: #b8d7a3,
+      number-integer: #b8d7a3,
+      object: #dcdcdc,
+      undefined: #e08331,
+      string: #d69d85,
+      link: #49b3ff,
+    )
+  )
+);
