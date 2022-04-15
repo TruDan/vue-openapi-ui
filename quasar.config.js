@@ -38,7 +38,7 @@ module.exports = configure(function (ctx) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      'mdi-v5',
+      'mdi-v6',
       // 'fontawesome-v6',
       // 'eva-icons',
       // 'themify',
@@ -54,7 +54,8 @@ module.exports = configure(function (ctx) {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
       // transpile: false,
-      // publicPath: '/',
+      env: require("dotenv").config().parsed,
+      publicPath: ctx.prod ? '/vue-openapi-ui/' : '/',
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
       // (from node_modules, which are by default not transpiled).
@@ -103,7 +104,7 @@ module.exports = configure(function (ctx) {
         }
       },
 
-      iconSet: 'mdi-v5', // Quasar icon set
+      iconSet: 'mdi-v6', // Quasar icon set
       //iconSet: 'material-icons', // Quasar icon set
       lang: 'en-US', // Quasar language pack
 
