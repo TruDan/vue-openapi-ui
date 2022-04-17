@@ -113,19 +113,53 @@ $q-tree-icon-size: 1.125rem;
     padding-left: 1rem;
   }
 
-  .q-tree__node:after {
-    left: -0.5rem;
-  }
+  .q-tree__node {
+    line-height: 1;
+    padding-bottom: 0.125rem;
 
-  .q-tree__node-header {
-    padding: 0;
+    &:after {
+      left: -0.5rem;
+      bottom: -0.625rem;
 
-    &:before {
-      width: 1.5rem;
-      left: -1.85rem;
-      bottom: unset;
-      top: -0.25rem;
-      height: 1rem;
+      border: none;
+      width: 1px;
+
+      background-image: linear-gradient(to bottom, currentColor 50%, transparent 0%);
+      background-size: 1px 2px;
+      background-position: top left;
+      background-repeat: repeat-y;
+    }
+
+    &-header {
+      padding: 0;
+      margin-top: 0;
+
+      &:before {
+        width: 1.5rem;
+        height: 1px;
+
+        left: -2em;
+        bottom: unset;
+        top: calc(.625rem - 1px);
+
+        border: none;
+
+        background-image: linear-gradient(to right, currentColor 50%, transparent 0%);
+        background-size: 2px 1px;
+        background-position: top left;
+        background-repeat: repeat-x;
+      }
+    }
+
+    &--parent {
+      padding-left: 0.25rem;
+
+      > .q-tree__node-header {
+        &:before {
+          left: -0.75em;
+          width: 1rem;
+        }
+      }
     }
   }
 }
