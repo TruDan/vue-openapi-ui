@@ -119,7 +119,7 @@
 
   $_jsonViewerElements: jv-flatten($_jsonViewerMergedThemes);
 
-  &.jv-light, &.jv-dark {
+  &, &.jv-light, &.jv-dark {
     white-space: nowrap;
     font-size: 14px;
     font-family: Consolas, Menlo, Courier, monospace;
@@ -154,8 +154,8 @@
       }
     }
 
-    @include jv-classes($_jsonViewerElements) using($key, $value, $basename) {
-      #{$key}: $value !important;
-    }
+  }
+  @include jv-classes($_jsonViewerElements) using($key, $value, $basename) {
+    #{$key}: $value !important;
   }
 }

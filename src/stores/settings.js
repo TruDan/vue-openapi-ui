@@ -29,11 +29,11 @@ export const useSettingsStore = defineStore('settings', {
   },
   actions: {
     load () {
-      uiApi.get('ui.json').then(response => {
-        if (response.status === 200) {
+      fetch('./ui.json').then(response => response.json()).then(settings => {
+        if (settings) {
           this.$reset();
           this.$patch({
-            ui:  response.data
+            ui:  settings
           });
         }
       })

@@ -81,11 +81,7 @@
                          :key="requestBodyMediaType"
                          :name="requestBodyMediaType"
             >
-
-              <json-viewer
-                copyable
-                sort
-                :value="requestBody"/>
+              <s-json-schema-viewer :schema="requestBody.schema"/>
             </q-tab-panel>
           </q-tab-panels>
         </q-card>
@@ -111,11 +107,15 @@
                          :key="responseCode"
                          :name="responseCode"
             >
-
-              <json-viewer
-                copyable
-                sort
-                :value="response"/>
+              <div v-if="response.content">
+                <q-expansion-item v-for="(responseContent, responseContentType) of response.content"
+                                  :key="responseContentType"
+                                  :label="responseContentType"
+                                  dense
+                >
+                  <s-json-schema-viewer :schema="responseContent.schema" />
+                </q-expansion-item>
+              </div>
             </q-tab-panel>
           </q-tab-panels>
         </q-card>
@@ -130,6 +130,7 @@
 import { useRoute } from 'vue-router'
 import { computed, inject, ref, watch } from 'vue'
 import JsonViewer from 'vue-json-viewer'
+import SJsonSchemaViewer from 'components/SJsonSchemaViewer'
 
 const route = useRoute()
 const spec = inject('spec')

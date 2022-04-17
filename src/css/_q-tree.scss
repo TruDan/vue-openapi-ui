@@ -107,3 +107,25 @@ $q-tree-icon-size: 1.125rem;
   }
 
 }
+
+.q-tree.jv-code {
+  .q-tree__children {
+    padding-left: 1rem;
+  }
+
+  .q-tree__node:after {
+    left: -0.5rem;
+  }
+
+  .q-tree__node-header {
+    padding: 0;
+
+    &:before {
+      width: 1.5rem;
+      left: -1.85rem;
+      bottom: unset;
+      top: -0.25rem;
+      height: 1rem;
+    }
+  }
+}
