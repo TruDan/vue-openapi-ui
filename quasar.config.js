@@ -11,8 +11,25 @@
 const ESLintPlugin = require('eslint-webpack-plugin')
 
 const { configure } = require('quasar/wrappers')
+const fs = require('fs')
+
+function resolveEnvFile(environment) {
+  if(environment && environment.length && fs.existsSync(`./.env.${environment}`))
+  {
+    return `./.env.${environment}`;
+  }
+  return './.env';
+}
 
 module.exports = configure(function (ctx) {
+  const envName = (ctx.prod)
+    ? 'production'
+    : (ctx.dev)
+      ? 'development'
+      : ''
+
+  const envFile = resolveEnvFile(envName);
+
   return {
     // https://v2.quasar.dev/quasar-cli-webpack/supporting-ts
     supportTS: false,
@@ -54,7 +71,7 @@ module.exports = configure(function (ctx) {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
 
       // transpile: false,
-      env: require("dotenv").config().parsed,
+      env: require('dotenv').config({ path: envFile }).parsed,
       publicPath: ctx.prod ? '/vue-openapi-ui/' : '/',
 
       // Add dependencies for transpiling with Babel (Array of string/regex)

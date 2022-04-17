@@ -29,7 +29,7 @@ export const useSettingsStore = defineStore('settings', {
   },
   actions: {
     load () {
-      fetch('./ui.json').then(response => response.json()).then(settings => {
+      fetch(process.env.VUE_APP_UI_SETTINGS_PATH).then(response => response.json()).then(settings => {
         if (settings) {
           this.$reset();
           this.$patch({
