@@ -1,5 +1,5 @@
 <template>
-  <div class="jv-container">
+  <div class="jv-container" v-if="schemaTree">
     <q-tree tick-strategy="none"
             class="jsonschematree jv-code"
             default-expand-all
@@ -46,7 +46,7 @@ const props = defineProps({
   }
 })
 
-const schemaTree = ref(null)
+const schemaTree = ref([])
 
 function schemaNodeToTreeNode (schemaNode, nodePath) {
   let children = []

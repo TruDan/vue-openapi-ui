@@ -121,6 +121,33 @@
         </q-card>
       </div>
 
+
+      <div class="col-12">
+        <q-card class="full-height">
+          <q-card-section>
+            <div class="text-h6">Debug</div>
+          </q-card-section>
+
+          <q-tabs v-model="debugTab" align="left">
+            <q-tab name="spec">Spec</q-tab>
+            <q-tab name="path">Path</q-tab>
+            <q-tab name="operation">Operation</q-tab>
+          </q-tabs>
+
+          <q-tab-panels v-model="debugTab">
+            <q-tab-panel name="spec">
+              <s-json-viewer :data="spec" />
+            </q-tab-panel>
+            <q-tab-panel name="path">
+              <s-json-viewer :data="path" />
+            </q-tab-panel>
+            <q-tab-panel name="operation">
+              <s-json-viewer :data="operation" />
+            </q-tab-panel>
+          </q-tab-panels>
+        </q-card>
+      </div>
+
     </div>
 
   </q-page>
@@ -131,11 +158,13 @@ import { useRoute } from 'vue-router'
 import { computed, inject, ref, watch } from 'vue'
 import JsonViewer from 'vue-json-viewer'
 import SJsonSchemaViewer from 'components/SJsonSchemaViewer'
+import SJsonViewer from 'components/SJsonViewer'
 
 const route = useRoute()
 const spec = inject('spec')
 const visibleRequestBody = ref(null)
 const visibleResponseCode = ref(null)
+const debugTab = ref(null)
 
 const pathName = computed(() => {
   return route.params.path
