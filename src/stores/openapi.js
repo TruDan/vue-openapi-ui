@@ -121,11 +121,11 @@ export const useOpenapiStore = defineStore('openapi', {
         }
       }
 
-      return uiApi.get(specUrl).then(response => {
+      return uiApi.get(specUrl)
+        .then(response => {
         if (response.status === 200 && response.data) {
           const spec = processSpecRefs(response.data)
 
-          console.log('loaded ', specName, specUrl, spec)
           this.$patch({
             specs: {
               [specName]: spec
@@ -135,6 +135,7 @@ export const useOpenapiStore = defineStore('openapi', {
         }
         throw new Error(`Invalid spec file from '${specUrl}'`)
       })
+
     }
   }
 })

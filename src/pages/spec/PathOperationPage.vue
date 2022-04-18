@@ -67,23 +67,7 @@
             <div class="text-h6">Request Body</div>
           </q-card-section>
 
-          <q-tabs v-model="visibleRequestBody" align="left">
-            <q-tab v-for="(requestBody, requestBodyMediaType) of operation.requestBody?.content"
-                   :key="requestBodyMediaType"
-                   :name="requestBodyMediaType"
-            >
-              {{ requestBodyMediaType }}
-            </q-tab>
-          </q-tabs>
-
-          <q-tab-panels v-model="visibleRequestBody">
-            <q-tab-panel v-for="(requestBody, requestBodyMediaType) of operation.requestBody?.content"
-                         :key="requestBodyMediaType"
-                         :name="requestBodyMediaType"
-            >
-              <s-json-schema-viewer :schema="requestBody.schema"/>
-            </q-tab-panel>
-          </q-tab-panels>
+          <s-path-operation-response :response="operation.requestBody" />
         </q-card>
       </div>
 
@@ -93,31 +77,23 @@
             <div class="text-h6">Responses</div>
           </q-card-section>
 
-          <q-tabs v-model="visibleResponseCode" align="left">
-            <q-tab v-for="(response, responseCode) of operation.responses"
-                   :key="responseCode"
-                   :name="responseCode"
-            >
-              {{ responseCode }} {{ response.description }}
-            </q-tab>
-          </q-tabs>
+          <q-expansion-item v-for="(response, responseCode) of operation.responses"
+                            :key="responseCode"
+                            :name="responseCode"
+                            default-opened
+                            dense
+          >
+            <template #header>
+              <q-item-section side>
+                <s-http-status-code-badge :code="responseCode" text />
+              </q-item-section>
+              <q-item-section>
+                {{ response.description }}
+              </q-item-section>
+            </template>
 
-          <q-tab-panels v-model="visibleResponseCode">
-            <q-tab-panel v-for="(response, responseCode) of operation.responses"
-                         :key="responseCode"
-                         :name="responseCode"
-            >
-              <div v-if="response.content">
-                <q-expansion-item v-for="(responseContent, responseContentType) of response.content"
-                                  :key="responseContentType"
-                                  :label="responseContentType"
-                                  dense
-                >
-                  <s-json-schema-viewer :schema="responseContent.schema" />
-                </q-expansion-item>
-              </div>
-            </q-tab-panel>
-          </q-tab-panels>
+            <s-path-operation-response :response="response" />
+          </q-expansion-item>
         </q-card>
       </div>
 
@@ -136,13 +112,13 @@
 
           <q-tab-panels v-model="debugTab">
             <q-tab-panel name="spec">
-              <s-json-viewer :data="spec" />
+              <s-json-viewer :data="spec"/>
             </q-tab-panel>
             <q-tab-panel name="path">
-              <s-json-viewer :data="path" />
+              <s-json-viewer :data="path"/>
             </q-tab-panel>
             <q-tab-panel name="operation">
-              <s-json-viewer :data="operation" />
+              <s-json-viewer :data="operation"/>
             </q-tab-panel>
           </q-tab-panels>
         </q-card>
@@ -159,6 +135,8 @@ import { computed, inject, ref, watch } from 'vue'
 import JsonViewer from 'vue-json-viewer'
 import SJsonSchemaViewer from 'components/SJsonSchemaViewer'
 import SJsonViewer from 'components/SJsonViewer'
+import SHttpStatusCodeBadge from 'components/SHttpStatusCodeBadge'
+import SPathOperationResponse from 'components/SPathOperationResponse'
 
 const route = useRoute()
 const spec = inject('spec')

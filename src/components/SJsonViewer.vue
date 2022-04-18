@@ -7,6 +7,14 @@
             node-key="key"
             label-key="title"
     >
+      <template #header-array-item="{ node }">
+        <div class="jv-node">
+          <div class="row items-center">
+            <div class="text-no-wrap text-weight-bold jv-key" v-if="!node.value">{{ node.title || node.$title }}</div>
+            <div class="text-caption q-ml-sm jv-item" :class="`jv-${node.type}`">{{ node.value }}</div>
+          </div>
+        </div>
+      </template>
 
       <template #default-header="{ node }">
         <div class="jv-node">
@@ -45,6 +53,7 @@ function jsonNodeToTreeNode (jsonNode, nodePath) {
     node.type = 'array'
     children.push(...jsonNode.map((arrayNode, index) => ({
         title: `[${index}]`,
+        header: 'array-item',
         ...jsonNodeToTreeNode(arrayNode, `${nodePath}[${index}]`)
       })
     ))

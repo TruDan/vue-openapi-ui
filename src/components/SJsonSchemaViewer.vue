@@ -58,11 +58,13 @@ function schemaNodeToTreeNode (schemaNode, nodePath) {
       ...schemaNodeToTreeNode(schemaNode.items, [nodePath, 'items'].join('.'))
     })
   } else if (schemaNode.type === 'object') {
-    children.push(...Object.entries(schemaNode.properties).map(([propertyKey, propertyNode]) => ({
-        title: propertyKey,
-        ...schemaNodeToTreeNode(propertyNode, [nodePath, 'properties', propertyKey].join('.'))
-      })
-    ))
+    if(schemaNode.properties) {
+      children.push(...Object.entries(schemaNode.properties).map(([propertyKey, propertyNode]) => ({
+          title: propertyKey,
+          ...schemaNodeToTreeNode(propertyNode, [nodePath, 'properties', propertyKey].join('.'))
+        })
+      ))
+    }
   }
 
   return ({
