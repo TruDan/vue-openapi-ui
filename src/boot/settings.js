@@ -1,6 +1,7 @@
 import {boot} from 'quasar/wrappers'
 import {useSettingsStore} from "stores/settings";
 import {setCssVar, Dark} from 'quasar'
+import { useUserstateStore } from 'stores/userstate'
 
 const themeVariableWhitelist = [
   'primary',
@@ -17,6 +18,7 @@ const themeVariableWhitelist = [
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
 export default boot(async () => {
   const settings = useSettingsStore();
+
   settings.$subscribe((mutation, state) => {
     if (state.ui) {
       if (state.ui.theme) {
@@ -30,5 +32,19 @@ export default boot(async () => {
       }
     }
   });
+
   settings.load();
+
+  const userstate = useUserstateStore();
+  userstate.$subscribe((mutation, state) => {
+
+    if(settings.ui.darkToggle) {
+      if (state.dark !== undefined) {
+        Dark.set(state.dark);
+      }
+    }
+    else {
+      Dark.set(settings.ui.dark);
+    }
+  });
 })

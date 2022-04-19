@@ -81,3 +81,32 @@
     }
   }
 }
+
+.s-parameter {
+  & > td {
+    height: 3.5rem !important;
+  }
+
+  &__type {
+    font-size: 0.75rem;
+    opacity: 0.65;
+    line-height: 1;
+  }
+
+  &__input {
+    .q-field__control {
+      &::before {
+        border-width: 0 !important;
+      }
+    }
+  }
+}
+
+
+.text-super {
+  vertical-align: super;
+}
+
+.text-sub {
+  vertical-align: sub;
+}

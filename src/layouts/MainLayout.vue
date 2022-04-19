@@ -15,21 +15,53 @@
           {{ settings.ui.title }}
         </q-toolbar-title>
 
-        <div>
-          <q-icon name="theme-light-dark"
-                  size="sm"
-          />
-          <q-toggle v-model="dark"
-                    toggle-indeterminate
-                    indeterminate-value="auto"
-                    toggle-order="ft"
+        <q-space/>
+        <div class="row items-center">
+          <q-separator vertical class="q-mx-md" />
+
+          <q-toggle v-model="userstate.tryMode"
                     color="secondary"
-                    keep-color>
-            <q-tooltip anchor="bottom middle"
-                       self="top middle">
-              {{ darkLabel }}
-            </q-tooltip>
-          </q-toggle>
+                    keep-color
+                    label="Try Mode"
+                    left-label
+          />
+
+          <q-separator vertical class="q-mx-md" />
+
+          <div class="row items-center">
+            <q-icon name="bug"
+                    size="sm"
+            />
+            <q-toggle v-model="userstate.debugMode"
+                      toggle-order="ft"
+                      color="secondary"
+                      keep-color>
+              <q-tooltip anchor="bottom middle"
+                         self="top middle">
+                Debug Mode
+              </q-tooltip>
+            </q-toggle>
+          </div>
+
+          <q-separator vertical class="q-mx-md" />
+
+          <div class="row items-center">
+            <q-icon name="theme-light-dark"
+                    size="sm"
+            />
+            <q-toggle v-model="dark"
+                      toggle-indeterminate
+                      indeterminate-value="auto"
+                      toggle-order="ft"
+                      color="secondary"
+                      keep-color>
+              <q-tooltip anchor="bottom middle"
+                         self="top middle">
+                {{ darkLabel }}
+              </q-tooltip>
+            </q-toggle>
+          </div>
+
         </div>
       </q-toolbar>
     </q-header>
@@ -48,7 +80,7 @@
       </q-list>
     </q-drawer>
     <teleport to="aside" v-if="mountDrawer">
-      <s-resize-handle v-model="drawerWidth" />
+      <s-resize-handle v-model="drawerWidth"/>
     </teleport>
 
     <q-page-container>
@@ -96,7 +128,7 @@ const split = ref(15)
 
 const dark = computed({
   get: () => Dark.mode,
-  set: (value) => Dark.set(value)
+  set: (value) => userstate.dark = value
 })
 
 const darkLabel = computed(() => dark.value === true

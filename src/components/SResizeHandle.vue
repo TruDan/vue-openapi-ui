@@ -74,6 +74,7 @@ function startDrag ({
   bottom: 0;
   padding: var(--rzh-padding);
   box-sizing: content-box;
+  user-select: none !important;
 
   &::before {
     content: '';

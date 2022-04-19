@@ -4,7 +4,7 @@ import { uiApi } from 'boot/axios'
 export const useSettingsStore = defineStore('settings', {
   state: () => ({
     ui: {
-      title: "Default Title",
+      title: 'Default Title',
       theme: {
         primary: null,
         secondary: null
@@ -20,21 +20,29 @@ export const useSettingsStore = defineStore('settings', {
     }
   }),
   getters: {
-    findSpec(state) {
-      return (specName) => state.ui.specs.find(x => x.name === specName);
+    findSpec (state) {
+      return (specName) => state.ui.specs.find(x => x.id === specName || x.name === specName)
     },
-    getIcon(state) {
-      return (iconName) => state.ui.icons && state.ui.icons[iconName] || undefined;
+    getIcon (state) {
+      return (iconName) => state.ui.icons && state.ui.icons[iconName] || undefined
     }
   },
   actions: {
     load () {
       fetch(process.env.VUE_APP_UI_SETTINGS_PATH).then(response => response.json()).then(settings => {
         if (settings) {
-          this.$reset();
+
+          if (settings.specs && Array.isArray(settings.specs)) {
+            settings.specs = settings.specs.map(s => ({
+              ...s,
+              id: s.id || s.name
+            }))
+          }
+
+          this.$reset()
           this.$patch({
-            ui:  settings
-          });
+            ui: settings
+          })
         }
       })
     }

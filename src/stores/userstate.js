@@ -5,16 +5,11 @@ export const useUserstateStore = defineStore('userstate', {
   state: () => ({
     navigation: {
       expanded: []
-    }
+    },
+    tryMode: false,
+    debugMode: false,
+    dark: undefined
   }),
   getters: {},
-  actions: {
-    load () {
-      uiApi.get('ui.json').then(response => {
-        if (response.status === 200) {
-          this.ui = response.data
-        }
-      })
-    }
-  }
+  actions: {}
 })

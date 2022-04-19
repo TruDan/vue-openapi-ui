@@ -17,7 +17,7 @@
           tick-strategy="none"
           no-connectors
           dense
-          class="s-navigation"
+          class="s-navigation non-selectable"
 
   >
     <template #header-api="{ node }">
@@ -49,13 +49,13 @@
     <template #header-operation="{ node }">
       <q-item dense
               class="full-width"
-              :to="{name: 'view-operation', params: { spec: node.specName, path: node.path, operation: node.operation }}"
+              :to="node.to"
       >
         <q-item-section>
           {{ node.label }}
         </q-item-section>
         <q-item-section side>
-          <s-operation-badge :operation="node.operation" text />
+          <s-operation-badge :operation="node.operation" text/>
         </q-item-section>
       </q-item>
     </template>
@@ -82,17 +82,16 @@ const trimEx = /^[\/]*/ius
 function cleanupNode (node) {
   return ({
     ...node,
-    label: node.label
-      ? node.label.replace(trimEx, '')
-      : undefined
+    label: node.label ? node.label.replace(trimEx, '') : undefined
   })
 }
 
-function specToTree ({ paths }, specName) {
+function specToTree ({ paths }, specId) {
   const pathTree = {}
   for (const [key, value] of Object.entries(paths)) {
     const segments = key.split('/')
     let last = pathTree
+
     for (const segment of segments) {
       if (!last[segment]) {
         last[segment] = {}
@@ -103,7 +102,7 @@ function specToTree ({ paths }, specName) {
     last['__value'] = {
       ...value,
       path: key,
-      specName
+      specId
     }
   }
   return pathTree
@@ -117,20 +116,33 @@ function treeToNodes (tree, parentItem = {}) {
       key: [relativePath, key].join('/'),
       relativePath: [relativePath, key].join('/'),
       label: key,
-      specName: value.specName || parentItem.specName
+      specId: value.specId || parentItem.specId
     }
     if (/^__.*/.test(key)) {
       nodes.push(...Object.entries(value)
-        .filter(([k, v]) => (!(['specName', 'path'].includes(k))))
-        .map(([k, v]) => cleanupNode({
-          key: `${relativePath}@${k}`,
-          path: v.path || value.path || parentItem.path || `${relativePath}`,
-          label: v.operationId || v.description || v.summary || k,
-          operation: k,
-          pathSpec: v,
-          header: `operation`,
-          specName: v.specName || value.specName || parentItem.specName
-        }))
+        .filter(([k, v]) => (!(['specId', 'path'].includes(k))))
+        .map(([k, v]) => {
+          const n = cleanupNode({
+            key: `${relativePath}@${k}`,
+            path: v.path || value.path || parentItem.path || `${relativePath}`,
+            label: v.operationId || v.description || v.summary || k,
+            operation: k,
+            pathSpec: v,
+            header: `operation`,
+            specId: v.specId || value.specId || parentItem.specId,
+          })
+          n.to = `/${n.specId}/${n.operation}$${n.path}`
+          // n.to = {
+          //   name: 'view-operation',
+          //   params: {
+          //     spec: n.specId,
+          //     specpath: n.path,
+          //     operation: n.operation
+          //   }
+          // }
+          console.log(n.to)
+          return n
+        })
       )
       continue
     }
@@ -154,24 +166,24 @@ function treeToNodes (tree, parentItem = {}) {
   return nodes
 }
 
-function specToNodes (spec, specName) {
-  return treeToNodes(specToTree(spec, specName))
+function specToNodes (spec, specId) {
+  return treeToNodes(specToTree(spec, specId))
 }
 
 function loadSpecs (specs) {
   nodes.value = specs.map(spec => {
     let children = undefined
 
-    const spec2 = openapi.getSpec(spec.name)
+    const spec2 = openapi.getSpec(spec.id)
     if (spec2) {
-      children = specToNodes(spec2, spec.name)
+      children = specToNodes(spec2, spec.id)
     }
 
     return ({
       label: spec.name,
       icon: 'folder-root',
-      key: spec.name,
-      specName: spec.name,
+      key: spec.id,
+      specId: spec.id,
       ...spec,
       lazy: true,
       //header: 'api'
@@ -226,6 +238,7 @@ $q-tree-icon-size: 1.125rem;
       }
 
     }
+
     &:not(.q-tree--no-connectors) {
       &::before {
         content: '';

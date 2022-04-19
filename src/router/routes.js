@@ -18,7 +18,7 @@ const routes = [
           },
           {
             name: 'view-operation',
-            path: ':operation/:path(.*)*',
+            path: ':operation$:specpath(.+)',
             component: () => import('pages/spec/PathOperationPage.vue'),
           }
         ]
