@@ -70,12 +70,6 @@
               :width="drawerWidth"
     >
       <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
         <SNavigation/>
       </q-list>
     </q-drawer>

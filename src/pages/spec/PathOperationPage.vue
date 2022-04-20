@@ -17,67 +17,7 @@
         <q-markdown v-if="operation.description">{{ operation.description }}</q-markdown>
       </div>
 
-      <q-slide-transition>
-        <div class="col-12" v-show="userstate.tryMode">
-          <q-card square flat>
-            <q-card-section>
-              <div class="text-h6">Try It</div>
-            </q-card-section>
-
-            <q-card-section>
-              <div class="text-h6">Parameters</div>
-              <q-markup-table dense
-                              square
-                              wrap-cells
-                              flat
-                              separator="none">
-                <tbody>
-                <tr v-for="p of operation.parameters"
-                    :key="p.name"
-                    class="s-parameter">
-                  <td>
-                    <code>
-                      <strong v-text="p.in === 'path' ? `{${p.name}}` : p.name"/>
-                      <strong v-if="p.required" class="text-red text-super q-ml-xs">*</strong>
-                    </code>
-                    <br/>
-                    <em class="text-caption s-parameter__type">{{ p.schema.type }}<span
-                      v-if="p.schema.format">({{ p.schema.format }})</span></em>
-                  </td>
-                  <td>
-                    <q-input
-                      class="s-parameter__input"
-                      dense
-                      filled
-                      borderless
-                      square
-                    />
-                  </td>
-                </tr>
-                </tbody>
-              </q-markup-table>
-            </q-card-section>
-
-            <q-card-section>
-              <q-input type="textarea"
-                       label="Body"
-                       stack-label
-                       autogrow
-                       dense
-                       borderless
-                       filled
-                       square
-                       class="s-parameter-input">
-
-              </q-input>
-            </q-card-section>
-
-            <q-card-actions>
-              <q-btn color="primary">Execute</q-btn>
-            </q-card-actions>
-          </q-card>
-        </div>
-      </q-slide-transition>
+      <s-operation-executor :operation="operation" />
 
       <div class="col-12 col-lg-6">
         <q-card class="full-height" v-if="operation.requestBody?.content">
@@ -159,8 +99,9 @@ import SHttpStatusCodeBadge from 'components/SHttpStatusCodeBadge'
 import SPathOperationResponse from 'components/SPathOperationResponse'
 import SOperationBadge from 'components/SOperationBadge'
 import { useUserstateStore } from 'stores/userstate'
+import SOperationExecutor from 'components/SOperationExecutor'
 
-const userstate = useUserstateStore()
+const userstate = useUserstateStore();
 const route = useRoute()
 const spec = inject('spec')
 const visibleRequestBody = ref(null)

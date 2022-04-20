@@ -3,8 +3,19 @@
 
 .q-tree.jv-code {
   .q-tree__children {
-    padding-left: 1.75rem;
+    padding-left: 0.75rem;
     padding-top: 0.5rem;
+
+    > div:last-of-type {
+      margin-left: -1rem;
+
+      .q-tree__node-header {
+        &:before {
+          left: 0.25rem;
+          width: 0.25rem;
+        }
+      }
+    }
   }
 
   .q-tree__node {
@@ -13,7 +24,7 @@
     padding-bottom: 0.125rem;
 
     &:after {
-      left: -0.5rem;
+      left: -0.3rem;
       bottom: -0.625rem;
 
       border: none;
@@ -26,14 +37,14 @@
     }
 
     &-header {
-      padding: 0 0.25rem;
+      padding: 0 0 0 1rem;
       margin-top: 0;
 
       &:before {
-        width: 1rem;
+        width: 1.5rem;
         height: 1px;
 
-        left: -1rem;
+        left: -0.75rem;
         bottom: unset;
         top: calc(.625rem - 1px);
 
@@ -48,12 +59,14 @@
 
     &--parent {
       //padding-left: 0.25rem;
-      padding-left: 0;
+      padding-left: 0.25rem;
 
       > .q-tree__node-header {
+        padding: 0;
+
         &:before {
-          left: -0.5rem;
-          width: 1rem;
+          left: -0.45rem;
+          width: 0.3rem;
         }
       }
     }

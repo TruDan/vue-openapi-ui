@@ -1,0 +1,50 @@
+// $
+.s-navigation {
+
+  &-toolbar {
+
+    border-top: 1px solid $separator-color;
+    border-bottom: 1px solid $separator-color;
+
+    .body--dark & {
+      border-top-color: $separator-dark-color;
+      border-bottom-color: $separator-dark-color;
+    }
+
+    &__filled {
+      background: $separator-color;
+      //border-width: 0 !important;
+
+      .body--dark & {
+        background: $dark;
+        border-color: $separator-dark-color;
+      }
+    }
+
+    .q-field {
+      margin: 0;
+      &__native, &__prefix, &__suffix, &__input {
+        line-height: 1rem;
+      }
+
+    }
+
+    .q-field--dense {
+      .q-field__control,
+      .q-field__marginal {
+        height: auto;
+      }
+
+      .q-field__native {
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+    }
+
+    .q-btn-dropdown {
+      &--simple * + .q-btn-dropdown__arrow {
+        margin-left: 0 !important;
+      }
+    }
+  }
+}

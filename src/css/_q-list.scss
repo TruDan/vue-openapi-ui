@@ -1,0 +1,8 @@
+// $
+.q-list {
+  &--dense {
+    > .q-item, .q-item--dense {
+      min-height: 1.5rem;
+    }
+  }
+}

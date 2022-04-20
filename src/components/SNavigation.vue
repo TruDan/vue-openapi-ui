@@ -1,14 +1,89 @@
 <template>
-  <q-input v-model="filter"
-           placeholder="Search..."
-           dense
-           clearable
-           outlined
-           rounded
-           type="search"
-           class="q-mb-sm"
-  />
-  <q-tree :nodes="nodes"
+
+
+  <div class="row no-wrap items-center s-navigation-toolbar s-navigation-toolbar__filled">
+
+    <q-input class="q-ma-sm col"
+             v-model="filter"
+             placeholder="Filter..."
+             dense
+             rounded
+             borderless
+             type="search"
+    >
+      <template #prepend>
+        <q-icon name="magnify" size="xs"></q-icon>
+      </template>
+      <template v-if="filter" #append>
+        <q-icon name="close"
+                size="xs"
+                @click.stop="filter = null"
+                class="cursor-pointer"/>
+      </template>
+    </q-input>
+    <div>
+      <q-btn dense
+             flat
+             stretch
+             padding="xs"
+             size="sm"
+             icon="arrow-expand-vertical"
+             @click.passive="$refs.treeNavigation.expandAll()"
+      />
+      <q-tooltip anchor="top middle"
+                 self="bottom middle"
+                 transition-show="fade"
+                 transition-hide="fade"
+                 :offset="[0,4]"
+      >
+        Expand All nodes
+      </q-tooltip>
+    </div>
+    <div>
+      <q-btn dense
+             flat
+             stretch
+             padding="xs"
+             size="sm"
+             icon="arrow-collapse-vertical"
+             @click.passive="$refs.treeNavigation.collapseAll()"
+      />
+      <q-tooltip anchor="top middle"
+                 self="bottom middle"
+                 transition-show="fade"
+                 transition-hide="fade"
+                 :offset="[0,4]"
+      >
+        Collapse All nodes
+      </q-tooltip>
+    </div>
+    <div>
+      <q-btn dense
+             flat
+             stretch
+             padding="xs"
+             size="sm"
+             unelevated
+             icon="dots-horizontal">
+        <q-menu>
+          <q-list dense>
+            <q-item clickable>Group By...</q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+      <q-tooltip anchor="top middle"
+                 self="bottom middle"
+                 transition-show="fade"
+                 transition-hide="fade"
+                 :offset="[0,4]"
+      >
+        Group By
+      </q-tooltip>
+    </div>
+  </div>
+
+  <q-tree ref="treeNavigation"
+          :nodes="nodes"
           :filter="filter"
           v-model:expanded="userstate.navigation.expanded"
 
@@ -75,6 +150,7 @@ const settings = useSettingsStore()
 const openapi = useOpenapiStore()
 const userstate = useUserstateStore()
 const filter = ref('')
+const treeNavigation = ref(null)
 const nodes = ref([])
 
 const trimEx = /^[\/]*/ius
@@ -163,6 +239,14 @@ function treeToNodes (tree, parentItem = {}) {
     })
   }
 
+  if (nodes.length === 1 && nodes[0].children) {
+    const node = nodes[0]
+    return node.children.map(child => cleanupNode({
+      ...child,
+      label: [node.label, child.label].join('/')
+    }))
+  }
+
   return nodes
 }
 
@@ -222,112 +306,114 @@ function onLazyLoad ({
 $q-tree-font-size: 0.875rem;
 $q-tree-icon-size: 1.125rem;
 
-.q-tree.s-navigation {
+.s-navigation {
 
-  /* Nested Items */
-  &.q-tree--dense {
-    font-size: $q-tree-font-size;
+  &.q-tree {
+    /* Nested Items */
+    &.q-tree--dense {
+      font-size: $q-tree-font-size;
 
-    .q-tree__children {
-      margin-left: 0.5rem;
-      padding-left: 0;
-      overflow-x: hidden;
+      .q-tree__children {
+        margin-left: 0.5rem;
+        padding-left: 0;
+        overflow-x: hidden;
 
-      .q-tree__node--child {
-        padding-left: 0.5rem;
+        .q-tree__node--child {
+          padding-left: 0.5rem;
+        }
+
       }
 
-    }
-
-    &:not(.q-tree--no-connectors) {
-      &::before {
-        content: '';
-        display: inline-block;;
-        position: absolute;
-        top: 0.5rem;
-        left: 0.5rem;
-        bottom: 0;
-        width: 1px;
-        opacity: 0.35;
-        background: currentColor;
-
-        transition: opacity linear .2s;
-      }
-
-      &:hover {
+      &:not(.q-tree--no-connectors) {
         &::before {
-          opacity: 0.5;
+          content: '';
+          display: inline-block;;
+          position: absolute;
+          top: 0.5rem;
+          left: 0.5rem;
+          bottom: 0;
+          width: 1px;
+          opacity: 0.35;
+          background: currentColor;
+
+          transition: opacity linear .2s;
+        }
+
+        &:hover {
+          &::before {
+            opacity: 0.5;
+          }
         }
       }
     }
-  }
 
-  /* Items */
-  .q-tree__node {
+    /* Items */
+    .q-tree__node {
 
-    .q-list--dense > .q-item,
-    .q-item--dense {
-      min-height: 1.5rem;
-      padding: 0;
-    }
-
-    &-header {
-      border-radius: 0;
-
-      > .q-tree__node-header-content {
-        white-space: nowrap;
+      .q-list--dense > .q-item,
+      .q-item--dense {
+        min-height: 1.5rem;
+        padding: 0;
       }
 
-      > .q-tree__arrow, > .q-spinner {
-        order: 10;
+      &-header {
+        border-radius: 0;
+
+        > .q-tree__node-header-content {
+          white-space: nowrap;
+        }
+
+        > .q-tree__arrow, > .q-spinner {
+          order: 10;
+        }
+      }
+
+      .q-item__section--side {
+        padding-right: 0.5rem;
       }
     }
 
-    .q-item__section--side {
-      padding-right: 0.5rem;
-    }
-  }
+    /* Avatars / Icons */
+    .q-tree__avatar,
+    .q-tree__node-header-content {
+      .q-avatar {
+        min-width: $q-tree-icon-size;
+        height: $q-tree-icon-size;
+        border-radius: 0;
+      }
 
-  /* Avatars / Icons */
-  .q-tree__avatar,
-  .q-tree__node-header-content {
-    .q-avatar {
-      min-width: $q-tree-icon-size;
-      height: $q-tree-icon-size;
-      border-radius: 0;
-    }
+      .q-icon {
+        font-size: $q-tree-icon-size;
+      }
 
-    .q-icon {
-      font-size: $q-tree-icon-size;
-    }
-
-    .operation-badge {
-      font-size: $q-tree-icon-size;
-      display: inline-block;
-      width: auto;
-      padding: 0;
-      text-align: right;
-
-      > .q-avatar__content {
-        font-size: 0.625rem;
-        font-weight: 900;
-        letter-spacing: 0.5pt;
+      .operation-badge {
+        font-size: $q-tree-icon-size;
+        display: inline-block;
         width: auto;
+        padding: 0;
         text-align: right;
+
+        > .q-avatar__content {
+          font-size: 0.625rem;
+          font-weight: 900;
+          letter-spacing: 0.5pt;
+          width: auto;
+          text-align: right;
+        }
+      }
+
+    }
+
+    .q-icon.mdi {
+      &.mdi-folder,
+      &.mdi-folder-open {
+        color: var(--q-accent);
       }
     }
 
-  }
-
-  .q-icon.mdi {
-    &.mdi-folder,
-    &.mdi-folder-open {
-      color: var(--q-accent);
+    a:any-link, a:link, a:visited {
+      text-decoration: none !important;
     }
-  }
-
-  a:any-link, a:link, a:visited {
-    text-decoration: none !important;
   }
 
 }
