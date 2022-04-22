@@ -68,6 +68,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
 
     'prefer-promise-reject-errors': 'off',
+    'vue/require-render-return': 'off',
 
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'

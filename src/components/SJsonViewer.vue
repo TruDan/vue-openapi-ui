@@ -79,6 +79,10 @@ const props = defineProps({
 
 const jsonTree = ref([])
 
+function handleNodeClick(node) {
+console.log('handleNodeClick', node);
+}
+
 function jsonNodeToTreeNode (jsonNode, nodePath) {
   let children = []
   const node = {
@@ -109,6 +113,7 @@ function jsonNodeToTreeNode (jsonNode, nodePath) {
   }
 
   if (children.length) {
+    node.handler = handleNodeClick;
     node.children.push({
       header: node.type === 'array' ? 'end-array' : 'end-object'
     })
