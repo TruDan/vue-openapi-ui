@@ -6,7 +6,6 @@
             :nodes="schemaTree"
             node-key="key"
             label-key="title"
-            :duration="0"
     >
 
       <template #default-header="{ node, expanded }">

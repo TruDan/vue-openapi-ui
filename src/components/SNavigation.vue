@@ -165,6 +165,9 @@ function cleanupNode (node) {
 function specToTree ({ paths }, specId) {
   const pathTree = {}
   for (const [key, value] of Object.entries(paths)) {
+    if(/^__.*/.test(key))
+      continue;
+
     const segments = key.split('/')
     let last = pathTree
 
@@ -194,7 +197,7 @@ function treeToNodes (tree, parentItem = {}) {
       label: key,
       specId: value.specId || parentItem.specId
     }
-    if (/^__.*/.test(key)) {
+    if (/^__value/.test(key)) {
       nodes.push(...Object.entries(value)
         .filter(([k, v]) => (!(['specId', 'path'].includes(k))))
         .map(([k, v]) => {

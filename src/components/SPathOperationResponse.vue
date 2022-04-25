@@ -17,7 +17,7 @@
 
     <q-tab-panels v-model="selectedTab">
       <q-tab-panel name="example">
-        <s-json-viewer :data="spec"/>
+        <s-json-viewer :data="selectedContent"/>
       </q-tab-panel>
       <q-tab-panel name="schema">
         <s-json-schema-viewer v-if="selectedContent" :schema="selectedContent"/>
@@ -27,13 +27,14 @@
 </template>
 
 <script setup>
-import { defineProps, computed, ref, onUpdated, onMounted } from 'vue'
+import { defineProps, computed, ref, onUpdated, onMounted, defineEmits } from 'vue'
 import SJsonSchemaViewer from 'components/SJsonSchemaViewer'
 import SJsonViewer from 'components/SJsonViewer'
 
 const props = defineProps({
   response: Object
 })
+
 
 const hasContent = computed(() => !!props.response?.content)
 

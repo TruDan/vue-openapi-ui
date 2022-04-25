@@ -8,8 +8,29 @@ export const useUserstateStore = defineStore('userstate', {
     },
     tryMode: false,
     debugMode: false,
-    dark: undefined
+    dark: undefined,
+    tryModeExecutions: {},
+    securities: { authorized: {} }
   }),
-  getters: {},
-  actions: {}
+  getters: {
+    getTryModeExecution (state) {
+      return (specName, operationId) => state.tryModeExecutions[`${specName}$$${operationId}`]
+    }
+  },
+  actions: {
+    createTryModeExecution (specName, operationId) {
+      const key = `${specName}$$${operationId}`
+      if (!this.tryModeExecutions[key]) {
+        this.tryModeExecutions[key] = {
+          state: {},
+          response: null,
+          error: null,
+          status: null,
+          statusCode: null,
+          loading: false
+        }
+      }
+      return this.tryModeExecutions[key];
+    }
+  }
 })

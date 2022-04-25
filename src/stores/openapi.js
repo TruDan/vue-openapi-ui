@@ -2,94 +2,30 @@ import { defineStore } from 'pinia'
 import { uiApi } from 'boot/axios'
 import { useSettingsStore } from 'stores/settings'
 import { reactive } from 'vue'
+import SwaggerClient from 'swagger-client'
+import { useUserstateStore } from 'stores/userstate'
+import { Notify } from 'quasar'
 
-function deepGet (obj, path, separator = '/') {
-  const paths = path.split(separator)
-  let current = obj
-  let i
-
-  for (i = 0; i < paths.length; ++i) {
-    if (current[paths[i]] == undefined) {
-      return undefined
-    } else {
-      current = current[paths[i]]
-    }
+function applyDefaults (spec) {
+  console.log(spec)
+  if(!spec.servers) {
+    spec.servers = [
+      {
+        url: new URL(spec.$$url).origin
+      }
+    ]
   }
-
-  return current
+  return spec
 }
-
-function deepWalkForProperty (obj, targetPropName, cb, parentObj, keyInParent, rootObj) {
-  if (parentObj === undefined) {
-    parentObj = obj
-  }
-
-  if (rootObj === undefined) {
-    rootObj = parentObj || obj
-  }
-
-  if (typeof (obj) === 'object') {
-    if (obj.hasOwnProperty(targetPropName)) {
-      cb({
-        value: obj[targetPropName],
-        target: obj,
-        parent: parentObj,
-        keyInParent: keyInParent,
-        root: rootObj
-      })
-
-      return
-    }
-
-    for (const k of Object.keys(obj)) {
-      deepWalkForProperty(obj[k], targetPropName, cb, obj, k, rootObj)
-    }
-  } else if (Array.isArray(obj)) {
-    for (let i = 0; i < obj.length; i++) {
-      deepWalkForProperty(obj[i], targetPropName, cb, obj, i, rootObj)
-    }
-  }
-}
-
-const refEx = /^#\/(?<path>[\w\/]+)$/si
-
-function processSpecRefs (specRaw) {
-  const spec = reactive(specRaw)
-
-  if (spec.components) {
-
-    for (const component of Object.keys(spec.components)) {
-      if(typeof(spec.components[component]) === 'object') {
-        for (const k of Object.keys(spec.components[component])) {
-          const cObj = spec.components[component][k];
-          if(!cObj.hasOwnProperty("$path")) {
-            cObj['$path'] = `/components/${component}/${k}`;
-          }
-          if(!cObj.hasOwnProperty('$title')) {
-            cObj['$title'] = cObj['title'] || k;
-          }
-        }
+function operationPaths (spec) {
+  if (spec.paths) {
+    for (const [pathKey, pathValue] of Object.entries(spec.paths)) {
+      for (const [operationKey, operationValue] of Object.entries(pathValue)) {
+        operationValue.$$path = pathKey
+        operationValue.$$operation = operationKey
       }
     }
   }
-
-  deepWalkForProperty(spec, '$ref', ({
-    value,
-    target,
-    parent,
-    keyInParent,
-    root
-  }) => {
-    if (typeof (value) !== 'string') return
-    const match = refEx.exec(value)
-    if (match && match.groups && match.groups.path) {
-      const newValue = deepGet(root, match.groups.path, '/')
-      if (newValue) {
-        parent[keyInParent] = newValue
-      }
-    }
-  })
-
   return spec
 }
 
@@ -104,13 +40,13 @@ export const useOpenapiStore = defineStore('openapi', {
      * @returns {function(string): OpenApi}
      */
     getSpec (state) {
-      return (specName) => state.specs[specName]
+      return (specName) => state.specs[specName]?.spec
     }
   },
   actions: {
     loadSpec (specName, specUrl) {
       if (this.specs[specName]) {
-        return Promise.resolve(this.specs[specName])
+        return Promise.resolve(this.specs[specName]?.spec)
       }
 
       if (!specUrl) {
@@ -121,21 +57,82 @@ export const useOpenapiStore = defineStore('openapi', {
         }
       }
 
-      return uiApi.get(specUrl)
-        .then(response => {
-        if (response.status === 200 && response.data) {
-          const spec = processSpecRefs(response.data)
+      // return uiApi.get(specUrl)
+      //   .then(response => {
+      //     if (response.status === 200 && response.data) {
+      //       return SwaggerClient.resolve({
+      //         spec: response.data,
+      //         url: specUrl
+      //       })
+      //     }
+      //     throw new Error(`Invalid spec file from '${specUrl}'`)
+      //   })
+      return SwaggerClient.resolve({
+        url: specUrl
+      })
+        .then(swagger => {
+          swagger.spec.$$name = specName;
+          swagger.spec.$$url = specUrl;
+          applyDefaults(swagger.spec);
+          operationPaths(swagger.spec);
 
           this.$patch({
             specs: {
-              [specName]: spec
+              [specName]: swagger
             }
           })
-          return this.specs[specName]
-        }
-        throw new Error(`Invalid spec file from '${specUrl}'`)
-      })
+          return this.specs[specName]?.spec
+        })
+    },
+    executeOperation (spec, operationId, parameters) {
+      const userstate = useUserstateStore()
+      const execution = userstate.createTryModeExecution(spec.$$name, operationId)
 
+      execution.error = undefined
+      execution.response = undefined
+      execution.loading = true
+
+      return new Promise((resolve, reject) => {
+        try {
+          SwaggerClient.execute({
+            spec: spec,
+            operationId: operationId,
+            parameters: parameters,
+            securities: userstate.securities
+          })
+            .then(response => {
+              resolve(response)
+            })
+            .catch(error => {
+              Notify.create({
+                color: 'negative',
+                textColor: 'white',
+                icon: 'warning',
+                message: `${error}`
+              })
+              reject(error)
+            })
+        } catch (error) {
+          Notify.create({
+            color: 'negative',
+            textColor: 'white',
+            icon: 'warning',
+            message: `${error}`
+          })
+          reject(error)
+        }
+      }).then(response => {
+        execution.response = response
+        execution.status = error.status
+        execution.statusCode = error.statusCode
+        execution.loading = false
+      }).catch(error => {
+        execution.response = error.response
+        execution.error = `${error.name} - ${error.message}`
+        execution.status = error.status
+        execution.statusCode = error.statusCode
+      })
     }
+
   }
 })
