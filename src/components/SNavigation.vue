@@ -141,9 +141,9 @@
 <script setup>
 
 import { computed, ref, watch } from 'vue'
-import { useSettingsStore } from 'stores/settings'
-import { useOpenapiStore } from 'stores/openapi'
-import { useUserstateStore } from 'stores/userstate'
+import useSettingsStore from 'stores/settings'
+import useOpenapiStore from 'stores/openapi'
+import useUserstateStore from 'stores/userstate'
 import SOperationBadge from 'components/SOperationBadge'
 
 const settings = useSettingsStore()

@@ -22,14 +22,20 @@
       </div> <!-- /.row.q-col-gutter-sm -->
 
       <div class="row q-col-gutter-sm">
-        <div class="col-12 col-lg" v-if="userstate.tryMode">
+        <div class="col-12 col-lg-6" v-if="userstate.tryMode">
           <s-operation-executor class="full-height"
                                 :spec="spec"
                                 :operation="operation"
           />
         </div> <!-- /.col-12.col-lg -->
 
-        <div class="col-12 col-lg">
+        <div v-if="userstate.tryMode"
+             class="col-12 col-lg-6 q-order-lg-8">
+          <s-operation-execution-result :spec="spec"
+                                        :operation="operation"/>
+        </div> <!-- /.col-12.col-lg -->
+
+        <div class="col-12 col-lg-6 q-order-lg-4">
           <q-card v-if="operation.requestBody?.content"
                   class="full-height">
 
@@ -40,16 +46,9 @@
             <s-path-operation-response :response="operation.requestBody"/>
           </q-card>
         </div> <!-- /.col-12.col-lg -->
-      </div> <!-- /.row.q-col-gutter-sm -->
 
-      <div class="row q-col-gutter-sm">
-        <div v-if="userstate.tryMode"
-             class="col-12 col-lg">
-          <s-operation-execution-result :spec="spec"
-                                        :operation="operation"/>
-        </div> <!-- /.col-12.col-lg -->
 
-        <div class="col-12 col-lg">
+        <div class="col-12 col-lg-6 q-order-lg-12">
           <q-card class="full-height">
             <q-card-section>
               <div class="text-h6">Responses</div>
@@ -77,7 +76,6 @@
       </div> <!-- /.row.q-col-gutter-sm -->
 
       <div class="row q-col-gutter-sm">
-        <q-slide-transition>
           <div class="col-12" v-show="userstate.debugMode">
             <q-card class="full-height">
               <q-card-section>
@@ -103,7 +101,6 @@
               </q-tab-panels>
             </q-card>
           </div> <!-- /.col-12 -->
-        </q-slide-transition>
       </div> <!-- /.row.q-col-gutter-sm -->
 
     </div>
@@ -120,7 +117,7 @@ import SHttpStatusCodeBadge from 'components/SHttpStatusCodeBadge'
 import SPathOperationResponse from 'components/SPathOperationResponse'
 import SOperationExecutionResult from 'components/SOperationExecutionResult'
 import SOperationBadge from 'components/SOperationBadge'
-import { useUserstateStore } from 'stores/userstate'
+import useUserstateStore from 'stores/userstate'
 import SOperationExecutor from 'components/SOperationExecutor'
 
 const userstate = useUserstateStore()

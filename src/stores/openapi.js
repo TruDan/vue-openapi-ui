@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { uiApi } from 'boot/axios'
-import { useSettingsStore } from 'stores/settings'
+import useSettingsStore from 'stores/settings'
 import { reactive } from 'vue'
 import SwaggerClient from 'swagger-client'
-import { useUserstateStore } from 'stores/userstate'
+import useUserstateStore from 'stores/userstate'
 import { Notify } from 'quasar'
 
 function applyDefaults (spec) {
@@ -29,7 +29,7 @@ function operationPaths (spec) {
   return spec
 }
 
-export const useOpenapiStore = defineStore('openapi', {
+const useOpenapiStore = defineStore('openapi', {
   state: () => ({
     mergedSpec: {},
     specs: {}
@@ -136,3 +136,4 @@ export const useOpenapiStore = defineStore('openapi', {
 
   }
 })
+export default useOpenapiStore;

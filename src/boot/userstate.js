@@ -1,5 +1,5 @@
 import { boot } from 'quasar/wrappers'
-import { useUserstateStore } from 'stores/userstate'
+import useUserstateStore from 'stores/userstate'
 
 // "async" is optional;
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files

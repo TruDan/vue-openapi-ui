@@ -25,6 +25,11 @@ const routes = [
       },
     ]
   },
+  {
+    path: '/authorization/oauth2/callback',
+    name: 'oidc-callback',
+    component: () => import('components/OauthCallback.vue')
+  },
 
   // Always leave this as last one,
   // but you can also remove it

@@ -1,7 +1,7 @@
 <template>
   <q-avatar class="operation-badge"
-            :color="!text && color"
-            :text-color="text && color"
+            :color="!text && color || undefined"
+            :text-color="text && color || undefined"
             square>
     {{ code }}
   </q-avatar>
@@ -11,7 +11,7 @@
 import { defineProps, computed } from 'vue'
 
 const props = defineProps({
-  code: Number,
+  code: [Number, String],
   text: {
     type: Boolean,
     default: () => false

@@ -1,9 +1,9 @@
 <template>
-  <router-view/>
+  <router-view :key="route.params.spec"/>
 </template>
 
 <script setup>
-import { useOpenapiStore } from 'stores/openapi'
+import useOpenapiStore from 'stores/openapi'
 import { useRoute } from 'vue-router'
 import { provide, ref, watch } from 'vue'
 

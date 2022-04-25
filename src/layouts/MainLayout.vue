@@ -62,6 +62,10 @@
             </q-toggle>
           </div>
 
+          <q-separator vertical class="q-ml-md" />
+
+          <s-oauth-authenticator />
+
         </div>
       </q-toolbar>
     </q-header>
@@ -79,7 +83,7 @@
 
     <q-page-container>
       <div ref="scrollTopHelper" class="hidden"></div>
-      <router-view/>
+      <router-view :key="route.fullPath"/>
     </q-page-container>
 
   </q-layout>
@@ -88,11 +92,12 @@
 <script setup>
 import { computed, ref, watch, Teleport, onMounted, nextTick } from 'vue'
 import SNavigation from 'components/SNavigation'
-import { useSettingsStore } from 'stores/settings'
-import { useUserstateStore } from 'stores/userstate'
+import useSettingsStore from 'stores/settings'
+import useUserstateStore from 'stores/userstate'
 import { useRoute } from 'vue-router'
 import { Dark, scroll } from 'quasar'
 import SResizeHandle from 'components/SResizeHandle'
+import SOauthAuthenticator from 'components/SOauthAuthenticator'
 
 const {
   getScrollTarget,

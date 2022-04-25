@@ -1,0 +1,17 @@
+// $
+@import "~quasar/src/css/helpers/string";
+@import "~quasar/src/css/helpers/math";
+
+@each $nameRaw, $size in $sizes {
+  $name: -#{$nameRaw};
+  $noProcNotZero: $size > 0;
+  @media (min-width: $size) {
+    @for $i from 0 through $flex-cols {
+      $ic: quote('' + $i);
+
+      #{str-fe('.q-order<name>-<i>', $name, $noProcNotZero, $ic)} {
+        order: $i;
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import {boot} from 'quasar/wrappers'
-import {useSettingsStore} from "stores/settings";
+import useSettingsStore from "stores/settings";
 import {setCssVar, Dark} from 'quasar'
-import { useUserstateStore } from 'stores/userstate'
+import useUserstateStore from 'stores/userstate'
 
 const themeVariableWhitelist = [
   'primary',

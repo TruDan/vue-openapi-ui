@@ -80,11 +80,11 @@
 <script setup>
 
 
-import { useUserstateStore } from 'stores/userstate'
+import useUserstateStore from 'stores/userstate'
 import { computed, defineEmits, defineProps, onMounted, reactive, ref, watch } from 'vue'
 import SInput from 'components/SInput'
 import SOperationBadge from 'components/SOperationBadge'
-import { useOpenapiStore } from 'stores/openapi'
+import useOpenapiStore from 'stores/openapi'
 import { useQuasar } from 'quasar'
 import { VAceEditor } from 'vue3-ace-editor'
 import 'ace-builds/webpack-resolver'

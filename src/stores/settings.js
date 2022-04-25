@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
 import { uiApi } from 'boot/axios'
+import useOauth from 'src/services/Oauth'
 
-export const useSettingsStore = defineStore('settings', {
+const useSettingsStore = defineStore('settings', {
   state: () => ({
     ui: {
       title: 'Default Title',
@@ -29,22 +30,30 @@ export const useSettingsStore = defineStore('settings', {
   },
   actions: {
     load () {
-      fetch(process.env.VUE_APP_UI_SETTINGS_PATH).then(response => response.json()).then(settings => {
-        if (settings) {
+      fetch(process.env.VUE_APP_UI_SETTINGS_PATH)
+        .then(response => response.json())
+        .then(settings => {
+          if (settings) {
 
-          if (settings.specs && Array.isArray(settings.specs)) {
-            settings.specs = settings.specs.map(s => ({
-              ...s,
-              id: s.id || s.name
-            }))
+            if (settings.specs && Array.isArray(settings.specs)) {
+              settings.specs = settings.specs.map(s => ({
+                ...s,
+                id: s.id || s.name
+              }))
+            }
+
+            if(settings.authorization?.oauth2) {
+              const oauth = useOauth();
+              oauth.init(settings.authorization.oauth2);
+            }
+
+            this.$reset()
+            this.$patch({
+              ui: settings
+            })
           }
-
-          this.$reset()
-          this.$patch({
-            ui: settings
-          })
-        }
-      })
+        })
     }
   }
 })
+export default useSettingsStore

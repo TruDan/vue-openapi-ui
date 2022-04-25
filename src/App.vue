@@ -4,7 +4,7 @@
 
 <script setup>
 import { useQuasar } from 'quasar'
-import { useSettingsStore } from 'stores/settings'
+import useSettingsStore from 'stores/settings'
 
 const $q = useQuasar()
 const settings = useSettingsStore()
