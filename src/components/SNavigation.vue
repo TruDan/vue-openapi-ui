@@ -219,7 +219,6 @@ function treeToNodes (tree, parentItem = {}) {
           //     operation: n.operation
           //   }
           // }
-          console.log(n.to)
           return n
         })
       )

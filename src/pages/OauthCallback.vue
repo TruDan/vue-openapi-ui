@@ -6,11 +6,15 @@
 
 import useOauth from 'src/services/Oauth'
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const oauth = useOauth();
+const router = useRouter();
 
 onMounted(() => {
-  oauth.callback();
+  oauth.callback().then(({user, redirectUrl}) => {
+    router.replace(redirectUrl ?? '/');
+  });
 })
 
 </script>

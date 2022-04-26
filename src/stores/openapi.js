@@ -7,7 +7,6 @@ import useUserstateStore from 'stores/userstate'
 import { Notify } from 'quasar'
 
 function applyDefaults (spec) {
-  console.log(spec)
   if(!spec.servers) {
     spec.servers = [
       {
@@ -29,7 +28,8 @@ function operationPaths (spec) {
   return spec
 }
 
-const useOpenapiStore = defineStore('openapi', {
+const useOpenapiStore = defineStore({
+  id: 'openapi',
   state: () => ({
     mergedSpec: {},
     specs: {}

@@ -54,8 +54,7 @@ const props = defineProps({
 const schemaTree = ref([])
 
 function handleNodeClick (node) {
-
-  const el = root.value.querySelector(`[data-key="${node.key.replace(/[\[\]\"]+/g, '\\$1')}"]`)
+  const el = root.value.querySelector(`[data-key="${node.key.replace(/[\[\]\"]/g, '\\$1')}"]`)
    nextTick(() => updateNodeClasses(el));
 }
 

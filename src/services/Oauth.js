@@ -1,14 +1,18 @@
-import { UserManager } from 'oidc-client'
+import { UserManager, Log } from 'oidc-client'
 import { ref, toRaw } from 'vue'
 import useUserstateStore from 'stores/userstate'
 import { useRouter } from 'vue-router'
 import { Router } from 'src/router'
 
+// Log.logger = console
+// Log.level = Log.DEBUG
+
 class Oauth {
 
   static #defaultOptions = {
     automaticSilentRenew: true,
-    redirect_uri: '/'
+    redirect_uri: 'oauth2-callback.html',
+    response_mode: 'fragment'
   }
 
   #userManager = undefined
@@ -27,12 +31,15 @@ class Oauth {
 
   }
 
-  init (options) {;
-    const cb = Router.resolve({ name: 'oidc-callback' });
-console.log(cb);
-    this.#userManager = new UserManager(Object.assign({}, Oauth.#defaultOptions, {
-      redirect_uri: new URL(cb.href, window.origin).toString()
-    }, options))
+  init (options) {
+
+    const opts = Object.assign({}, Oauth.#defaultOptions, options)
+    if (opts.redirect_uri) {
+      if (!/^(?:\/|\w+:\/\/)/.test(opts.redirect_uri)) {
+        opts.redirect_uri = new URL(opts.redirect_uri, window.origin).toString()
+      }
+    }
+    this.#userManager = new UserManager(opts)
     this.#userManager.events.addUserLoaded(this.#onUserLoaded.bind(this))
     this.#userManager.events.addUserUnloaded(this.#onUserUnloaded.bind(this))
     this.#userManager.events.addSilentRenewError(this.#onSilentRenewError.bind(this))
@@ -40,8 +47,9 @@ console.log(cb);
     this.#userManager.events.addUserSignedOut(this.#onUserSignedOut.bind(this))
     this.#userManager.events.addUserSessionChanged(this.#onUserSessionChanged.bind(this))
 
-    return this.#userManager.clearStaleState().then(() => {
-      return this.silentLogin()
+    return this.#userManager.clearStaleState()
+      .then(() => {
+      return this.#userManager.getUser();
     })
   }
 
@@ -53,11 +61,7 @@ console.log(cb);
     const userstate = useUserstateStore()
     userstate.setAuthCallbackLocation()
 
-    return this.#userManager.getUser()
-      .then(user => user != null
-        ? this.#userManager.signinSilent()
-          .catch(() => this.#userManager.signinRedirect())
-        : this.#userManager.signinRedirect())
+    return this.#userManager.signinRedirect()
   }
 
   logout () {
@@ -69,18 +73,27 @@ console.log(cb);
       .then((user) => {
         if (!!user) {
           const userstate = useUserstateStore()
+
+          userstate.setOauthUser(user);
+
           const redirectUrl = userstate.getAuthCallbackLocation
           if (redirectUrl) {
             const router = useRouter()
-            return router.replace(redirectUrl)
+            return router.replace(redirectUrl).then(() => ({
+              user,
+              redirectUrl: redirectUrl
+            }))
           }
         }
-        return user
+
+        return {
+          user,
+          redirectUrl: undefined
+        }
       })
   }
 
   #onUserLoaded (user) {
-    console.log('user loaded', user)
     this.#user.value = user
     this.#authenticated = !!user
   }

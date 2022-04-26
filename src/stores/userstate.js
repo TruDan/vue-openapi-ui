@@ -17,8 +17,8 @@ const useUserstateStore = defineStore({
       authorized: {},
       oauth: {
         authenticated: false,
-        accessToken: undefined,
-        refreshToken: undefined,
+        access_token: undefined,
+        refresh_token: undefined,
         redirectUrl: undefined,
         profile: {
           avatar: undefined,
@@ -55,6 +55,25 @@ const useUserstateStore = defineStore({
     },
     setAuthCallbackLocation() {
       this.securities.oauth.redirectUrl = route.fullPath;
+    },
+    setOauthUser(user) {
+      this.securities.oauth = user;
+      if(user) {
+        this.securities.authorized.oauth2 = {
+          ...user,
+          token: {
+            access_token: user.access_token,
+            id_token: user.id_token,
+            refresh_token: user.refresh_token,
+            token_type: user.token_type,
+            expires_at: user.expires_at,
+            scopes: user.scopes,
+            scope: user.scope,
+          },
+          name: 'oauth2',
+          scopes: user.scopes
+        }
+      }
     }
   }
 })

@@ -163,7 +163,6 @@ function checkTabs (newOperation) {
     } else {
       const keys = Object.keys(newOperation.requestBody.content)
       if (keys.length) {
-        console.log('set visibleRequestBody to', keys[0])
         visibleRequestBody.value = keys[0]
       }
     }
@@ -171,7 +170,6 @@ function checkTabs (newOperation) {
   if (!visibleResponseCode.value || (visibleResponseCode.value && !newOperation.responses[visibleResponseCode.value])) {
     const keys = Object.keys(newOperation.responses)
     if (keys.length) {
-      console.log('set visibleResponseCode to', keys[0])
       visibleResponseCode.value = keys[0]
     }
   }

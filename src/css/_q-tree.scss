@@ -72,33 +72,69 @@
     }
 
 
-    &--expanded {
-      &.jv-array, &.jv-object {
-        > .q-tree__node-header
-        > .q-tree__node-header-content
-        > .jv-node {
-          &::after {
-            display: block;
-            position: absolute;
-            right: -1rem;
-            line-height: 1rem;
-            bottom: 0.125rem;
-          }
-        }
+    &.jv-array, &.jv-object {
+      > .q-tree__node-header
+      > .q-tree__node-header-content
+      > .jv-node {
+        display: inline-block;
+        min-height: 1.25rem;
 
-        > .q-tree__node-collapsible
-        > .q-tree__children {
-          padding-bottom: 1rem;
-
-          &::after {
-            display: block;
-            position: absolute;
-            bottom: 0.25rem;
-            left: 0.75rem;
-          }
+        &::after {
+          display: block;
+          position: absolute;
+          left: calc(100% + 0.25rem);
+          line-height: 1rem;
+          bottom: 0.125rem;
         }
       }
 
+      > .q-tree__node-collapsible
+      > .q-tree__children {
+        padding-bottom: 1rem;
+
+        &::after {
+          display: block;
+          position: absolute;
+          bottom: 0.375rem;
+          left: 0.625rem;
+        }
+      }
+    }
+
+    .jv-string {
+      word-wrap: normal;
+      white-space: normal;
+    }
+
+    &.jv-array {
+      > .q-tree__node-header
+      > .q-tree__node-header-content
+      > .jv-node::after {
+        content: '[..]';
+        color: var(--jv-item-array);
+      }
+
+      > .q-tree__node-collapsible
+      > .q-tree__children::after {
+        opacity: 0;
+      }
+    }
+
+    &.jv-object {
+      > .q-tree__node-header
+      > .q-tree__node-header-content
+      > .jv-node::after {
+        content: '{..}';
+        color: var(--jv-item-object);
+      }
+
+      > .q-tree__node-collapsible
+      > .q-tree__children::after {
+        opacity: 0;
+      }
+    }
+
+    &--expanded {
       &.jv-array {
         > .q-tree__node-header
         > .q-tree__node-header-content
@@ -111,6 +147,7 @@
         > .q-tree__children::after {
           content: ']';
           color: var(--jv-item-array);
+          opacity: 1;
         }
       }
 
@@ -126,6 +163,7 @@
         > .q-tree__children::after {
           content: '}';
           color: var(--jv-item-object);
+          opacity: 1;
         }
       }
     }

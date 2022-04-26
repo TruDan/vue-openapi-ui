@@ -1,5 +1,5 @@
 <template>
-  <div class="jv-container" v-if="jsonTree">
+  <div class="jv-container" v-if="jsonTree" ref="root">
     <q-tree tick-strategy="none"
             class="jsontree jv-code"
             default-expand-all
@@ -7,59 +7,21 @@
             node-key="key"
             label-key="title"
     >
-      <template #header-end-object>
-        <div class="jv-node">
-          <div class="row items-center">
-            <div class="text-no-wrap jv-item jv-object">}</div>
-          </div>
-        </div>
-      </template>
-
-      <template #header-end-array>
-        <div class="jv-node">
-          <div class="row items-center">
-            <div class="text-no-wrap jv-item jv-array">]</div>
-          </div>
-        </div>
-      </template>
-
-      <template #header-array-item="{ node }">
-        <div class="jv-node">
-          <div class="row items-center">
-            <div class="text-no-wrap text-weight-bold jv-key" v-if="!node.value">{{ node.title || node.$title }}</div>
-            <div class="text-caption q-ml-sm jv-item" :class="`jv-${node.type}`">{{ node.value }}</div>
-          </div>
-        </div>
-      </template>
-
-      <template #header-array="{ node, expanded }">
-        <div class="jv-node">
-          <div class="row items-center">
-            <div class="text-no-wrap text-weight-bold jv-key">{{ node.title || node.$title }}</div>
-            :
-            <div class="text-caption q-ml-sm jv-item" :class="`jv-${node.type}`">{{ node.value }}</div>
-            <template v-if="node.children">
-              <em>
-                <span class="jv-item jv-array">[</span>
-                <span class="jv-ellipsis" v-if="!expanded">...</span>
-                <span class="jv-item jv-array" v-if="!expanded">]</span>
-              </em>
-            </template>
-          </div>
-        </div>
-      </template>
-
       <template #default-header="{ node, expanded }">
-        <div class="jv-node">
-          <div class="row items-center">
-            <div class="text-no-wrap text-weight-bold jv-key">{{ node.title || node.$title }}</div>
-            :
-            <div class="text-caption q-ml-sm jv-item" :class="`jv-${node.type}`">{{ node.value }}</div>
-            <template v-if="node.children">
-              <span class="jv-item jv-object">{</span>
-              <span class="jv-ellipsis" v-if="!expanded">...</span>
-              <span class="jv-item jv-object" v-if="!expanded">}</span>
-            </template>
+        <div class="jv-node"
+             :data-key="node.key"
+             :data-expanded="expanded"
+             :data-type="node.type">
+          <div class="row items-baseline">
+            <div class="text-no-wrap col-auto" v-if="node.title">
+              <span class="text-weight-bold jv-key">
+                {{ node.title }}
+              </span>
+              <span>:</span>
+            </div>
+            <div class="col q-ml-sm">
+              <span :class="`jv-item jv-${node.type}`">{{ node.value }}</span>
+            </div>
           </div>
         </div>
       </template>
@@ -68,7 +30,9 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch } from 'vue'
+import { defineProps, nextTick, onMounted, onUpdated, ref, watch } from 'vue'
+
+const root = ref(null)
 
 const props = defineProps({
   data: {
@@ -79,8 +43,28 @@ const props = defineProps({
 
 const jsonTree = ref([])
 
-function handleNodeClick(node) {
-console.log('handleNodeClick', node);
+function handleNodeClick (node) {
+  const el = root.value.querySelector(`[data-key="${node.key.replace(/[\[\]\"]/g, '\\$1')}"]`)
+  nextTick(() => updateNodeClasses(el))
+}
+
+function updateNodeClasses (e) {
+  const tn = e.closest('.q-tree__node')
+  tn.classList.toggle('q-tree__node--expanded', (e.dataset.expanded === 'true'))
+  for (const key of tn.classList.keys()) {
+    if (/^jv-/.test(key)) {
+      tn.classList.remove(key)
+    }
+  }
+  tn.classList.add(`jv-${e.dataset.type}`)
+}
+
+function updateClasses () {
+  if (root.value) {
+    root.value.querySelectorAll('[data-expanded]').forEach(e => {
+      updateNodeClasses(e)
+    })
+  }
 }
 
 function jsonNodeToTreeNode (jsonNode, nodePath) {
@@ -88,15 +72,18 @@ function jsonNodeToTreeNode (jsonNode, nodePath) {
   const node = {
     key: nodePath,
     type: typeof (jsonNode),
+    typeTitle: jsonNode.title || jsonNode.$title || '',
     children: children
   }
 
-  if (Array.isArray(jsonNode)) {
+  if (jsonNode === null || jsonNode === undefined) {
+    node.type = 'null'
+    node.value = 'null'
+  } else if (Array.isArray(jsonNode)) {
     node.type = 'array'
     node.header = 'array'
     children.push(...jsonNode.map((arrayNode, index) => ({
         title: `[${index}]`,
-        header: 'array-item',
         ...jsonNodeToTreeNode(arrayNode, `${nodePath}[${index}]`)
       })
     ))
@@ -113,10 +100,7 @@ function jsonNodeToTreeNode (jsonNode, nodePath) {
   }
 
   if (children.length) {
-    node.handler = handleNodeClick;
-    node.children.push({
-      header: node.type === 'array' ? 'end-array' : 'end-object'
-    })
+    node.handler = handleNodeClick
   } else {
     node.children = undefined
   }
@@ -132,6 +116,14 @@ watch(() => props.data, (data) => {
   updateJsonTree(data)
 }, {
   deep: true
+})
+
+onMounted(() => {
+  updateClasses()
+})
+
+onUpdated(() => {
+  updateClasses()
 })
 
 if (props.data) {

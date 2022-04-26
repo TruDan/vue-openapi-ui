@@ -11,7 +11,6 @@ export default {
   },
   setup (props) {
     return () => {
-      console.log('render SInput', props)
 
       function getAppropriateType (schema) {
         if (!schema || !schema.type) {

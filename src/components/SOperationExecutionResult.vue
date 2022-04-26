@@ -14,8 +14,20 @@
         </q-banner>
       </q-card-section>
 
+      <q-card-section v-if="execution.response.headers">
+        <q-markup-table square flat dense>
+          <tbody>
+          <tr v-for="(headerValue, headerKey) of execution.response.headers"
+              :key="headerKey">
+            <th>{{headerKey}}</th>
+            <td>{{headerValue}}</td>
+          </tr>
+          </tbody>
+        </q-markup-table>
+      </q-card-section>
+
       <q-card-section v-if="execution.response">
-        <s-json-viewer :data="execution"/>
+        <s-json-viewer v-if="execution.response.body" :data="execution.response.body"/>
       </q-card-section>
 
     </q-card>

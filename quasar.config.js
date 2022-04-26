@@ -8,7 +8,9 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js
 
+const path = require('path')
 const ESLintPlugin = require('eslint-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const { configure } = require('quasar/wrappers')
 const fs = require('fs')
@@ -91,9 +93,38 @@ module.exports = configure(function (ctx) {
       // https://v2.quasar.dev/quasar-cli-webpack/handling-webpack
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
 
-      chainWebpack (chain) {
+      chainWebpack (chain, cfg) {
         chain.plugin('eslint-webpack-plugin')
-          .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }])
+          .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }]);
+
+        if(cfg.isClient) {
+          chain.entry('oauth2-callback')
+            .add('src/oauth2-callback.main.js')
+            .end();
+
+          chain.plugin('html-webpack')
+           .tap(args => {
+             args[0].excludeChunks = ['oauth2-callback'];
+             return args;
+           });
+
+          const htmlWebpackOptions = chain.plugin('html-webpack').toConfig().userOptions
+
+          chain.plugin('html-oauth2-callback')
+            .use(HtmlWebpackPlugin,[{
+              template: path.resolve('src/oauth2-callback.template.html'),
+              filename: 'oauth2-callback.html',
+              chunks: ['oauth2-callback'],
+              excludeChunks: ['app'],
+              minify: htmlWebpackOptions.minify,
+              templateParameters: htmlWebpackOptions.templateParameters || cfg.htmlVariables,
+              chunksSortMode: 'none',
+              // inject script tags for bundle
+              inject: true,
+              cache: true
+            }])
+            .after('html-webpack')
+        }
       }
 
     },
@@ -144,30 +175,6 @@ module.exports = configure(function (ctx) {
     // https://quasar.dev/options/animations
     animations: [],
 
-    // https://v2.quasar.dev/quasar-cli-webpack/developing-ssr/configuring-ssr
-    ssr: {
-      pwa: false,
-
-      // manualStoreHydration: true,
-      // manualPostHydrationTrigger: true,
-
-      prodPort: 3000, // The default port that the production server should use
-      // (gets superseded if process.env.PORT is specified at runtime)
-
-      maxAge: 1000 * 60 * 60 * 24 * 30,
-      // Tell browser when a file from the server should expire from cache (in ms)
-
-      chainWebpackWebserver (chain) {
-        chain.plugin('eslint-webpack-plugin')
-          .use(ESLintPlugin, [{ extensions: ['js'] }])
-      },
-
-      middlewares: [
-        ctx.prod ? 'compression' : '',
-        'render' // keep this as last one
-      ]
-    },
-
     // https://v2.quasar.dev/quasar-cli-webpack/developing-pwa/configuring-pwa
     pwa: {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
@@ -217,53 +224,7 @@ module.exports = configure(function (ctx) {
           }
         ]
       }
-    },
-
-    // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/developing-cordova-apps/configuring-cordova
-    cordova: {
-      // noIosLegacyBuildFlag: true, // uncomment only if you know what you are doing
-    },
-
-    // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/developing-capacitor-apps/configuring-capacitor
-    capacitor: {
-      hideSplashscreen: true
-    },
-
-    // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/developing-electron-apps/configuring-electron
-    electron: {
-      bundler: 'packager', // 'packager' or 'builder'
-
-      packager: {
-        // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
-
-        // OS X / Mac App Store
-        // appBundleId: '',
-        // appCategoryType: '',
-        // osxSign: '',
-        // protocol: 'myapp://path',
-
-        // Windows only
-        // win32metadata: { ... }
-      },
-
-      builder: {
-        // https://www.electron.build/configuration/configuration
-
-        appId: 'vue-openapi-ui'
-      },
-
-      // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
-
-      chainWebpackMain (chain) {
-        chain.plugin('eslint-webpack-plugin')
-          .use(ESLintPlugin, [{ extensions: ['js'] }])
-      },
-
-      chainWebpackPreload (chain) {
-        chain.plugin('eslint-webpack-plugin')
-          .use(ESLintPlugin, [{ extensions: ['js'] }])
-      }
-
     }
+
   }
 })
