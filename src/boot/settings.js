@@ -18,6 +18,7 @@ const themeVariableWhitelist = [
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
 export default boot(async () => {
   const settings = useSettingsStore();
+  const userstate = useUserstateStore();
 
   settings.$subscribe((mutation, state) => {
     if (state.ui) {
@@ -27,15 +28,21 @@ export default boot(async () => {
         }
       }
 
-      if (state.ui.dark) {
-        Dark.set(state.ui.dark);
+      if(settings.ui.darkToggle) {
+        if (userstate.dark !== undefined) {
+          Dark.set(userstate.dark);
+        }
+      }
+      else {
+        if (state.ui.dark !== undefined) {
+          Dark.set(state.ui.dark);
+        }
       }
     }
   });
 
   settings.load();
 
-  const userstate = useUserstateStore();
   userstate.$subscribe((mutation, state) => {
 
     if(settings.ui.darkToggle) {

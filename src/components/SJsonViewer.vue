@@ -68,18 +68,22 @@ function updateClasses () {
 }
 
 function jsonNodeToTreeNode (jsonNode, nodePath) {
+
   let children = []
   const node = {
     key: nodePath,
     type: typeof (jsonNode),
-    typeTitle: jsonNode.title || jsonNode.$title || '',
     children: children
   }
-
   if (jsonNode === null || jsonNode === undefined) {
     node.type = 'null'
     node.value = 'null'
-  } else if (Array.isArray(jsonNode)) {
+  }
+  else {
+    node.typeTitle = jsonNode.title || jsonNode.$title || '';
+  }
+
+  if (Array.isArray(jsonNode)) {
     node.type = 'array'
     node.header = 'array'
     children.push(...jsonNode.map((arrayNode, index) => ({

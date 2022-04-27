@@ -67,7 +67,9 @@
              icon="dots-horizontal">
         <q-menu>
           <q-list dense>
-            <q-item clickable>Group By...</q-item>
+            <div class="text-subtitle1">Group By...</div>
+            <q-item clickable @click="userstate.navigation.groupMode = 'tree'">Tree</q-item>
+            <q-item clickable @click="userstate.navigation.groupMode = 'tags'">Tags</q-item>
           </q-list>
         </q-menu>
       </q-btn>
@@ -96,10 +98,27 @@
 
   >
     <template #header-api="{ node }">
-      <q-chip square color="transparent" class="column">
-        <q-icon :name="node.icon"/>
-        {{ node.label }}
-      </q-chip>
+      <q-item dense>
+        <q-item-section avatar v-if="node.avatar">
+          <q-avatar>
+            <q-img :src="node.avatar"/>
+          </q-avatar>
+        </q-item-section>
+        <q-item-section side v-else-if="node.icon">
+          <q-avatar>
+            <q-icon
+              :name="((!node.icon && node.children) || node.icon === 'folder')
+                      ? (expanded
+                        ? 'folder-open'
+                        : 'folder-closed')
+                      : node.icon"
+            />
+          </q-avatar>
+        </q-item-section>
+        <q-item-section>
+          {{ node.label }}
+        </q-item-section>
+      </q-item>
     </template>
 
     <template #default-header="{ node, expanded }">
@@ -140,7 +159,7 @@
 
 <script setup>
 
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import useSettingsStore from 'stores/settings'
 import useOpenapiStore from 'stores/openapi'
 import useUserstateStore from 'stores/userstate'
@@ -165,8 +184,9 @@ function cleanupNode (node) {
 function specToTree ({ paths }, specId) {
   const pathTree = {}
   for (const [key, value] of Object.entries(paths)) {
-    if(/^__.*/.test(key))
-      continue;
+    if (/^__.*/.test(key)) {
+      continue
+    }
 
     const segments = key.split('/')
     let last = pathTree
@@ -185,6 +205,48 @@ function specToTree ({ paths }, specId) {
     }
   }
   return pathTree
+}
+
+function specToTags({paths}, specId) {
+  const taggedNodes = {}
+  const untaggedNodes = []
+
+  for (const [key, value] of Object.entries(paths)) {
+    for (const [operationKey, operationValue] of Object.entries(value)) {
+      const tags = operationValue.tags;
+      const n = cleanupNode({
+        key: `${key}@${operationKey}`,
+        path: key,
+        label: operationValue.operationId || operationValue.description || operationValue.summary || operationKey,
+        operation: operationKey,
+        pathSpec: operationValue,
+        header: `operation`,
+        specId: specId,
+      })
+      n.to = `/${n.specId}/${n.operation}$${n.path}`
+
+      if(!tags) {
+        untaggedNodes.push(n);
+      }
+      else {
+        for(const tag of tags) {
+          if(!taggedNodes[tag]) {
+            taggedNodes[tag] = [];
+          }
+          taggedNodes[tag].push(n);
+        }
+      }
+    }
+  }
+
+  return [
+    ...Object.entries(taggedNodes).map(([tag, nodes]) => ({
+      key: tag,
+      label: tag,
+      children: nodes
+    })),
+    ...untaggedNodes
+  ]
 }
 
 function treeToNodes (tree, parentItem = {}) {
@@ -211,14 +273,6 @@ function treeToNodes (tree, parentItem = {}) {
             specId: v.specId || value.specId || parentItem.specId,
           })
           n.to = `/${n.specId}/${n.operation}$${n.path}`
-          // n.to = {
-          //   name: 'view-operation',
-          //   params: {
-          //     spec: n.specId,
-          //     specpath: n.path,
-          //     operation: n.operation
-          //   }
-          // }
           return n
         })
       )
@@ -253,7 +307,11 @@ function treeToNodes (tree, parentItem = {}) {
 }
 
 function specToNodes (spec, specId) {
-  return treeToNodes(specToTree(spec, specId))
+  if (userstate.navigation.groupMode === 'tags') {
+    return specToTags(spec, specId);
+  } else {
+    return treeToNodes(specToTree(spec, specId))
+  }
 }
 
 function loadSpecs (specs) {
@@ -272,7 +330,7 @@ function loadSpecs (specs) {
       specId: spec.id,
       ...spec,
       lazy: true,
-      //header: 'api'
+      header: 'api',
       children: children
     })
   })
@@ -283,9 +341,33 @@ watch(() => settings.ui.specs, (specs) => {
 }, {
   deep: true
 })
-if (settings.ui.specs) {
-  loadSpecs(settings.ui.specs)
+
+watch(() => userstate.navigation.groupMode, groupMode => {
+  loadExpandedSpecs(userstate.navigation.expanded)
+})
+
+function loadExpandedSpecs (expanded) {
+  if (!expanded) return
+  const specNames = expanded.filter(x => !/^\//.test(x))
+  specNames
+    .map(specName => openapi
+      .loadSpec(specName)
+      .then(spec => {
+        const node = treeNavigation.value.getNodeByKey(specName)
+        if (node) {
+          node.children = specToNodes(spec, specName)
+        }
+      }))
 }
+
+onMounted(() => {
+  if (settings.ui.specs) {
+    loadSpecs(settings.ui.specs)
+  }
+  if (userstate.navigation.expanded) {
+    loadExpandedSpecs(userstate.navigation.expanded)
+  }
+})
 
 function onLazyLoad ({
   node,

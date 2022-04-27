@@ -6,6 +6,13 @@ import SwaggerClient from 'swagger-client'
 import useUserstateStore from 'stores/userstate'
 import { Notify } from 'quasar'
 
+import localforage from "localforage";
+
+const fs = localforage.createInstance({
+  name: "openapi-ui",
+  storeName: "openapi-cache"
+});
+
 function applyDefaults (spec) {
   if(!spec.servers) {
     spec.servers = [
@@ -57,31 +64,35 @@ const useOpenapiStore = defineStore({
         }
       }
 
-      // return uiApi.get(specUrl)
-      //   .then(response => {
-      //     if (response.status === 200 && response.data) {
-      //       return SwaggerClient.resolve({
-      //         spec: response.data,
-      //         url: specUrl
-      //       })
-      //     }
-      //     throw new Error(`Invalid spec file from '${specUrl}'`)
-      //   })
-      return SwaggerClient.resolve({
-        url: specUrl
-      })
+      return fs.getItem(specUrl)
+        .then(cached => {
+          if(cached) {
+            return cached;
+          }
+          else {
+            return SwaggerClient.resolve({
+              url: specUrl
+            })
+              .then(swagger => {
+                swagger.spec.$$name = specName;
+                swagger.spec.$$url = specUrl;
+                applyDefaults(swagger.spec);
+                operationPaths(swagger.spec);
+                return swagger;
+              })
+              .then(swagger => {
+                return fs.setItem(specUrl, JSON.parse(JSON.stringify(swagger)))
+                  .then(() => swagger);
+              })
+          }
+        })
         .then(swagger => {
-          swagger.spec.$$name = specName;
-          swagger.spec.$$url = specUrl;
-          applyDefaults(swagger.spec);
-          operationPaths(swagger.spec);
-
           this.$patch({
             specs: {
               [specName]: swagger
             }
-          })
-          return this.specs[specName]?.spec
+          });
+          return this.specs[specName]?.spec;
         })
     },
     executeOperation (spec, operationId, parameters) {

@@ -1,7 +1,7 @@
 <template>
 
   <q-slide-transition>
-    <q-card square flat v-if="execution">
+    <q-card square v-if="execution" class="full-height">
       <q-card-section>
         <s-http-status-code-badge :code="execution.statusCode"/>
         <code>{{ execution.response?.url }}</code>
@@ -14,7 +14,7 @@
         </q-banner>
       </q-card-section>
 
-      <q-card-section v-if="execution.response.headers">
+      <q-card-section v-if="execution.response?.headers">
         <q-markup-table square flat dense>
           <tbody>
           <tr v-for="(headerValue, headerKey) of execution.response.headers"

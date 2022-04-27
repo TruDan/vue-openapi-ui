@@ -7,7 +7,8 @@ const useUserstateStore = defineStore({
   id: 'userstate',
   state: () => ({
     navigation: {
-      expanded: []
+      expanded: [],
+      groupMode: 'tree'
     },
     tryMode: false,
     debugMode: false,
