@@ -56,13 +56,9 @@
         </q-card-section>
 
         <q-card-section v-if="operation.requestBody" class="col-grow">
-          <v-ace-editor
-            v-model:value="state.requestBody"
-            :lang="lang"
+          <ace-editor
+            v-model="state.requestBody"
             class="full-height"
-            :theme="theme"
-            :options="aceOptions"
-            @init="editorInit"
           />
         </q-card-section>
 
@@ -86,31 +82,10 @@ import SInput from 'components/SInput'
 import SOperationBadge from 'components/SOperationBadge'
 import useOpenapiStore from 'stores/openapi'
 import { useQuasar } from 'quasar'
-import { VAceEditor } from 'vue3-ace-editor'
-import 'ace-builds/webpack-resolver'
-import ace_modeJson from 'file-loader?esModule=false!ace-builds/src-noconflict/mode-json.js'
-import ace_themeLight from 'file-loader?esModule=false!ace-builds/src-noconflict/theme-chrome.js'
-import ace_themeDark from 'file-loader?esModule=false!ace-builds/src-noconflict/theme-one_dark.js'
-import ace_workerJsonUrl from 'file-loader?esModule=false!ace-builds/src-noconflict/worker-json.js'
-
-ace.require('ace/ext/code_lens')
-ace.require('ace/ext/error_marker')
-ace.require('ace/ext/keybinding_menu')
-ace.require('ace/ext/language_tools')
-ace.require('ace/ext/options')
-ace.require('ace/ext/searchbox')
-ace.require('ace/ext/settings_menu')
-ace.require('ace/ext/settings_statusbar')
-ace.require('ace/ext/settings_whitespace')
-ace.require('ace/keybinding/vscode')
-ace.config.setModuleUrl('ace/mode/json', ace_modeJson)
-ace.config.setModuleUrl('ace/theme/chrome', ace_themeLight)
-ace.config.setModuleUrl('ace/theme/one_dark', ace_themeDark)
-ace.config.setModuleUrl('ace/mode/json_worker', ace_workerJsonUrl)
+import AceEditor from 'components/AceEditor'
 
 const userstate = useUserstateStore()
 const openapi = useOpenapiStore()
-const $q = useQuasar()
 
 const props = defineProps({
   spec: {
@@ -121,37 +96,6 @@ const props = defineProps({
     type: Object,
     required: true
   }
-})
-
-const lang = computed(() => {
-  //if(props.operation.)
-  return 'json'
-})
-
-const theme = computed(() => {
-  if ($q.dark.isActive) {
-    return 'one_dark'
-  }
-  return 'chrome'
-})
-
-const aceOptions = computed(() => {
-  /** @type EditorOptions */
-  const opts = {
-    enableAutoIndent: true,
-    foldStyle: 'markbegin',
-    mode: 'ace/mode/json',
-    showLineNumbers: true,
-    enableBasicAutocompletion: true,
-    enableLiveAutocompletion: false,
-    showPrintMargin: false,
-    tabSize: 2
-  }
-  if (lang.value === 'json') {
-    opts.useWorker = true
-  }
-
-  return opts
 })
 
 const state = reactive({
@@ -168,14 +112,6 @@ const onSubmit = () => {
     .then(response => {
       loading.value = false;
     })
-}
-
-/**
- *
- * @param {Ace.Editor} editor
- */
-function editorInit (editor) {
-
 }
 
 function onReset () {

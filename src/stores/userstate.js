@@ -39,8 +39,7 @@ const useUserstateStore = defineStore({
        return this.securities.oauth.redirectUrl;
     }
   },
-  actions: {
-    createTryModeExecution (specName, operationId) {
+  actions: { createTryModeExecution (specName, operationId) {
       const key = `${specName}$$${operationId}`
       if (!this.tryModeExecutions[key]) {
         this.tryModeExecutions[key] = {

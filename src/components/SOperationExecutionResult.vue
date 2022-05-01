@@ -1,7 +1,8 @@
 <template>
-
-  <q-slide-transition>
-    <q-card square v-if="execution" class="full-height">
+  <response-viewer v-if="execution"
+                   :response="execution.response"
+  >
+    <template #before>
       <q-card-section>
         <s-http-status-code-badge :code="execution.statusCode"/>
         <code>{{ execution.response?.url }}</code>
@@ -13,25 +14,9 @@
           {{ execution.error }}
         </q-banner>
       </q-card-section>
+    </template>
 
-      <q-card-section v-if="execution.response?.headers">
-        <q-markup-table square flat dense>
-          <tbody>
-          <tr v-for="(headerValue, headerKey) of execution.response.headers"
-              :key="headerKey">
-            <th>{{headerKey}}</th>
-            <td>{{headerValue}}</td>
-          </tr>
-          </tbody>
-        </q-markup-table>
-      </q-card-section>
-
-      <q-card-section v-if="execution.response">
-        <s-json-viewer v-if="execution.response.body" :data="execution.response.body"/>
-      </q-card-section>
-
-    </q-card>
-  </q-slide-transition>
+  </response-viewer>
 </template>
 
 <script setup>
@@ -39,7 +24,7 @@
 import { defineProps, watch, onMounted, ref } from 'vue'
 import useUserstateStore from 'stores/userstate'
 import SHttpStatusCodeBadge from 'components/SHttpStatusCodeBadge'
-import SJsonViewer from 'components/SJsonViewer'
+import ResponseViewer from 'components/ResponseViewer'
 
 const props = defineProps({
   spec: {

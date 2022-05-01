@@ -110,3 +110,21 @@
 .text-sub {
   vertical-align: sub;
 }
+
+.q-btn-group.q-btn-toggle-bordered {
+
+  > .q-btn-item {
+    border: 1px solid var(--q-primary);
+
+    &:not(:first-child) {
+      border-left-width: 0 !important;
+    }
+    &:not(:last-child) {
+      border-right-width: 0 !important;
+    }
+
+    &.bg-primary {
+      border: 1px solid var(--q-primary);
+    }
+  }
+}

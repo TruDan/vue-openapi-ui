@@ -81,11 +81,17 @@ const useOpenapiStore = defineStore({
               return fs
                 .setItem(specName, cached)
                 .then(() => cached)
-                .then(cached => swaggerClient.resolve({ url: specUrl, spec: cached }))
+                .then(cached => swaggerClient.resolve({
+                  url: specUrl,
+                  spec: cached
+                }))
             }
 
             if (cached.$$cacheExpires.getTime() > new Date().getTime()) {
-              return swaggerClient.resolve({ url: specUrl, spec: cached })
+              return swaggerClient.resolve({
+                url: specUrl,
+                spec: cached
+              })
             }
           }
 
@@ -134,8 +140,8 @@ const useOpenapiStore = defineStore({
       const userstate = useUserstateStore()
       const execution = userstate.createTryModeExecution(spec.$$name, operationId)
 
-      execution.error = undefined
-      execution.response = undefined
+      execution.error = null
+      execution.response = null
       execution.loading = true
 
       return new Promise((resolve, reject) => {
@@ -147,30 +153,38 @@ const useOpenapiStore = defineStore({
             securities: userstate.securities
           })
             .then(response => {
+              console.log("Response:", response);
               resolve(response)
             })
             .catch(error => {
-              Notify.create({
-                color: 'negative',
-                textColor: 'white',
-                icon: 'warning',
-                message: `${error}`
-              })
-              reject(error)
+              console.log("catch", error);
+              if (error) {
+                Notify.create({
+                  color: 'negative',
+                  textColor: 'white',
+                  icon: 'warning',
+                  message: `${error}`
+                })
+                reject(error)
+              }
             })
         } catch (error) {
-          Notify.create({
-            color: 'negative',
-            textColor: 'white',
-            icon: 'warning',
-            message: `${error}`
-          })
-          reject(error)
+          console.log("catch2", error);
+          if (error) {
+            Notify.create({
+              color: 'negative',
+              textColor: 'white',
+              icon: 'warning',
+              message: `${error}`
+            })
+            reject(error)
+          }
         }
       }).then(response => {
+        console.log("then1", response);
         execution.response = response
-        execution.status = error.status
-        execution.statusCode = error.statusCode
+        execution.status = response.status
+        execution.statusCode = response.statusCode
         execution.loading = false
       }).catch(error => {
         execution.response = error.response
