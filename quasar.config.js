@@ -89,7 +89,7 @@ module.exports = configure(function (ctx) {
       // analyze: true,
 
       // Options below are automatically set depending on the env, set them if you want to override
-      // extractCSS: false,
+      extractCSS: true,
 
       // https://v2.quasar.dev/quasar-cli-webpack/handling-webpack
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain

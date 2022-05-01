@@ -1,6 +1,4 @@
 <template>
-
-
   <div class="row no-wrap items-center s-navigation-toolbar s-navigation-toolbar__filled">
 
     <q-input class="q-ma-sm col"
@@ -84,6 +82,7 @@
     </div>
   </div>
 
+  <div ref="root">
   <q-tree ref="treeNavigation"
           :nodes="nodes"
           :filter="filter"
@@ -93,7 +92,6 @@
           @lazy-load="onLazyLoad"
           tick-strategy="none"
           no-connectors
-          dense
           class="s-navigation non-selectable"
 
   >
@@ -142,28 +140,31 @@
 
     <template #header-operation="{ node }">
       <q-item dense
-              class="full-width"
+              class="full-width q-tree__node--operation"
               :to="node.to"
       >
         <q-item-section>
           {{ node.label }}
         </q-item-section>
-        <q-item-section side>
+        <q-item-section side class="q-pa-none">
           <s-operation-badge :operation="node.operation" text/>
         </q-item-section>
       </q-item>
     </template>
 
   </q-tree>
+  </div>
 </template>
 
 <script setup>
 
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUpdated, ref, watch, nextTick } from 'vue'
 import useSettingsStore from 'stores/settings'
 import useOpenapiStore from 'stores/openapi'
 import useUserstateStore from 'stores/userstate'
 import SOperationBadge from 'components/SOperationBadge'
+
+const root = ref(null)
 
 const settings = useSettingsStore()
 const openapi = useOpenapiStore()
@@ -207,13 +208,13 @@ function specToTree ({ paths }, specId) {
   return pathTree
 }
 
-function specToTags({paths}, specId) {
+function specToTags ({ paths }, specId) {
   const taggedNodes = {}
   const untaggedNodes = []
 
   for (const [key, value] of Object.entries(paths)) {
     for (const [operationKey, operationValue] of Object.entries(value)) {
-      const tags = operationValue.tags;
+      const tags = operationValue.tags
       const n = cleanupNode({
         key: `${key}@${operationKey}`,
         path: key,
@@ -225,15 +226,14 @@ function specToTags({paths}, specId) {
       })
       n.to = `/${n.specId}/${n.operation}$${n.path}`
 
-      if(!tags) {
-        untaggedNodes.push(n);
-      }
-      else {
-        for(const tag of tags) {
-          if(!taggedNodes[tag]) {
-            taggedNodes[tag] = [];
+      if (!tags) {
+        untaggedNodes.push(n)
+      } else {
+        for (const tag of tags) {
+          if (!taggedNodes[tag]) {
+            taggedNodes[tag] = []
           }
-          taggedNodes[tag].push(n);
+          taggedNodes[tag].push(n)
         }
       }
     }
@@ -308,7 +308,7 @@ function treeToNodes (tree, parentItem = {}) {
 
 function specToNodes (spec, specId) {
   if (userstate.navigation.groupMode === 'tags') {
-    return specToTags(spec, specId);
+    return specToTags(spec, specId)
   } else {
     return treeToNodes(specToTree(spec, specId))
   }
@@ -353,9 +353,11 @@ function loadExpandedSpecs (expanded) {
     .map(specName => openapi
       .loadSpec(specName)
       .then(spec => {
+        if (!spec) return
         const node = treeNavigation.value.getNodeByKey(specName)
         if (node) {
           node.children = specToNodes(spec, specName)
+          treeNavigation.value.setExpanded(specName, true)
         }
       }))
 }
@@ -367,6 +369,33 @@ onMounted(() => {
   if (userstate.navigation.expanded) {
     loadExpandedSpecs(userstate.navigation.expanded)
   }
+})
+
+function updateNodeClasses (e) {
+  const tn = e.closest('.q-tree__node-header');
+  tn.classList.toggle('q-hoverable', true);
+  tn.classList.toggle('q-focusable', true);
+  tn.classList.toggle('q-tree__node--link', true);
+
+  e.classList.toggle('q-hoverable', false);
+  e.classList.toggle('q-focusable', false);
+  e.classList.toggle('q-tree__node--link', false);
+}
+function updateClasses () {
+  if (root.value) {
+    root.value.querySelectorAll('.q-tree__node--operation').forEach(e => {
+      updateNodeClasses(e);
+    })
+  }
+}
+
+watch(() => nodes.value, () => {
+  nextTick(() => updateClasses());
+}, {
+  deep: true
+})
+onUpdated(() => {
+  updateClasses();
 })
 
 function onLazyLoad ({
@@ -433,11 +462,27 @@ $q-tree-icon-size: 1.125rem;
 
     /* Items */
     .q-tree__node {
+      .q-tree__node {
+        padding: 0 0 0 0.5rem;
+      }
+      .q-tree__children {
+        padding-left: 0.5rem;
+      }
 
       .q-list--dense > .q-item,
       .q-item--dense {
-        min-height: 1.5rem;
+        min-height: 1rem;
         padding: 0;
+      }
+
+      &.q-tree__node--operation {
+        .q-tree__node-header {
+          padding: 0;
+
+          .q-item {
+            padding: 4px;
+          }
+        }
       }
 
       &-header {
@@ -445,11 +490,22 @@ $q-tree-icon-size: 1.125rem;
 
         > .q-tree__node-header-content {
           white-space: nowrap;
+
+          > .q-item {
+            .q-item__section {
+              &:not(.q-item__section--side) {
+                display: inline-block;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              }
+            }
+          }
         }
 
-        > .q-tree__arrow, > .q-spinner {
-          order: 10;
-        }
+        //> .q-tree__arrow, > .q-spinner {
+        //  order: 10;
+        //}
       }
 
       .q-item__section--side {
@@ -473,9 +529,9 @@ $q-tree-icon-size: 1.125rem;
       .operation-badge {
         font-size: $q-tree-icon-size;
         display: inline-block;
-        width: auto;
+        width: 1.5rem;
         padding: 0;
-        text-align: right;
+        text-align: center;
 
         > .q-avatar__content {
           font-size: 0.625rem;

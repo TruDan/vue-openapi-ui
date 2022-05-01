@@ -6,15 +6,15 @@ import SwaggerClient from 'swagger-client'
 import useUserstateStore from 'stores/userstate'
 import { Notify } from 'quasar'
 
-import localforage from "localforage";
+import localforage from 'localforage'
 
 const fs = localforage.createInstance({
-  name: "openapi-ui",
-  storeName: "openapi-cache"
-});
+  name: 'openapi-ui',
+  storeName: 'openapi-cache'
+})
 
 function applyDefaults (spec) {
-  if(!spec.servers) {
+  if (!spec.servers) {
     spec.servers = [
       {
         url: new URL(spec.$$url).origin
@@ -23,6 +23,7 @@ function applyDefaults (spec) {
   }
   return spec
 }
+
 function operationPaths (spec) {
   if (spec.paths) {
     for (const [pathKey, pathValue] of Object.entries(spec.paths)) {
@@ -62,39 +63,73 @@ const useOpenapiStore = defineStore({
         if (matchingSpec) {
           specUrl = matchingSpec.url
         }
+        if (!specUrl) {
+          return Promise.reject()
+        }
       }
+      console.log('loadSpec', specName, specUrl)
+      const swaggerClient = new SwaggerClient(specUrl)
 
-      return fs.getItem(specUrl)
+      return fs.getItem(specName)
         .then(cached => {
-          if(cached) {
-            return cached;
+          if (cached) {
+            if (!cached.$$cacheExpires) {
+              const cacheExpiresDate = new Date()
+              cacheExpiresDate.setHours(cacheExpiresDate.getHours() + 1)
+              cached.$$cacheExpires = cacheExpiresDate
+
+              return fs
+                .setItem(specName, cached)
+                .then(() => cached)
+                .then(cached => swaggerClient.resolve({ url: specUrl, spec: cached }))
+            }
+
+            if (cached.$$cacheExpires.getTime() > new Date().getTime()) {
+              return swaggerClient.resolve({ url: specUrl, spec: cached })
+            }
           }
-          else {
-            return SwaggerClient.resolve({
-              url: specUrl
+
+          SwaggerClient.clearCache()
+          return SwaggerClient.resolve({
+            url: specUrl,
+            userFetch: (url, req) => SwaggerClient.http(url, {
+              ...req,
+              mode: 'no-cors'
             })
-              .then(swagger => {
-                swagger.spec.$$name = specName;
-                swagger.spec.$$url = specUrl;
-                applyDefaults(swagger.spec);
-                operationPaths(swagger.spec);
-                return swagger;
-              })
-              .then(swagger => {
-                return fs.setItem(specUrl, JSON.parse(JSON.stringify(swagger)))
-                  .then(() => swagger);
-              })
-          }
+          })
+            .then(swagger => {
+              if (!swagger) {
+                throw new Error('Failed to load swagger :(')
+              }
+              swagger.spec.$$name = specName
+              swagger.spec.$$url = specUrl
+              applyDefaults(swagger.spec)
+              operationPaths(swagger.spec)
+              return swagger
+            })
+            .then(swagger => {
+              const cached = JSON.parse(JSON.stringify(swagger))
+              const cacheExpiresDate = new Date()
+              cacheExpiresDate.setHours(cacheExpiresDate.getHours() + 1)
+              cached.$$cacheExpires = cacheExpiresDate
+
+              return fs
+                .setItem(specName, cached.originalSpec)
+                .then(() => swagger)
+            })
+            .catch((err) => {
+            })
         })
         .then(swagger => {
           this.$patch({
             specs: {
               [specName]: swagger
             }
-          });
-          return this.specs[specName]?.spec;
+          })
+          return this.specs[specName]?.spec
         })
     },
+
     executeOperation (spec, operationId, parameters) {
       const userstate = useUserstateStore()
       const execution = userstate.createTryModeExecution(spec.$$name, operationId)
@@ -147,4 +182,4 @@ const useOpenapiStore = defineStore({
 
   }
 })
-export default useOpenapiStore;
+export default useOpenapiStore

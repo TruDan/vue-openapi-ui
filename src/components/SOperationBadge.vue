@@ -4,8 +4,7 @@
               'operation-badge__text': text,
               [`text-${operation}`]: text,
               [`bg-${operation}`]: !text,
-            }"
-            square>
+            }">
     {{ operation }}
   </q-avatar>
 </template>

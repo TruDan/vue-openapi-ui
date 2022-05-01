@@ -58,7 +58,12 @@ const useUserstateStore = defineStore({
       this.securities.oauth.redirectUrl = route.fullPath;
     },
     setOauthUser(user) {
-      this.securities.oauth = user;
+      this.securities.oauth = {
+        ...user,
+        ...{
+          redirectUrl: this.securities.oauth.redirectUrl
+        }
+      };
       if(user) {
         this.securities.authorized.oauth2 = {
           ...user,

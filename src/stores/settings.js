@@ -30,7 +30,7 @@ const useSettingsStore = defineStore('settings', {
   },
   actions: {
     load () {
-      fetch(process.env.VUE_APP_UI_SETTINGS_PATH)
+      return fetch(process.env.VUE_APP_UI_SETTINGS_PATH)
         .then(response => response.json())
         .then(settings => {
           if (settings) {
@@ -52,6 +52,7 @@ const useSettingsStore = defineStore('settings', {
               ui: settings
             })
           }
+          return settings;
         })
     }
   }

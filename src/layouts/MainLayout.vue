@@ -77,8 +77,13 @@
         <SNavigation/>
       </q-list>
     </q-drawer>
+
     <teleport to="aside" v-if="mountDrawer">
-      <s-resize-handle v-model="drawerWidth"/>
+      <s-resize-handle v-model="drawerWidth"
+                       min-value="10%"
+                       max-value="50%"
+                       :width="2"
+      />
     </teleport>
 
     <q-page-container>
