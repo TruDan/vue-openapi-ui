@@ -1,0 +1,129 @@
+{
+  "title": "My APIs",
+  "theme": {
+    "primary": "#FF9015",
+    "secondary": "#000000",
+    "accent": "#D8B67C"
+  },
+  "dark": true,
+  "specs": [
+    {
+      "id": "buildingapi",
+      "name": "Building API",
+      "icon": "domain",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/buildingapi"
+    },
+    {
+      "id": "controlapi",
+      "name": "Control API",
+      "icon": "tune-vertical",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/controlapi"
+    },
+    {
+      "id": "deviceapi",
+      "name": "Device API",
+      "icon": "memory",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/deviceapi"
+    },
+    {
+      "id": "deviceapirefactor",
+      "name": "Device API Refactor",
+      "icon": "memory",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/deviceapi-refactor"
+    },
+    {
+      "id": "devicefirmwareapi",
+      "name": "Device Firmware API",
+      "icon": "monitor-arrow-down-variant",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/devicefirmwareapi"
+    },
+    {
+      "id": "documentapi",
+      "name": "Document API",
+      "icon": "library",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/documentapi"
+    },
+    {
+      "id": "messagingapi",
+      "name": "Messaging API",
+      "icon": "message",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/messagingapi"
+    },
+    {
+      "id": "mqttapi",
+      "name": "MQTT API",
+      "icon": "broadcast",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/mqttapi"
+    },
+    {
+      "id": "smartmeterapi",
+      "name": "Smartmeter API",
+      "icon": "gauge",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/smartmeterapi"
+    },
+    {
+      "id": "scheduleapi",
+      "name": "Schedule API",
+      "icon": "calendar",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/scheduleapi"
+    },
+    {
+      "id": "subscriptionapi",
+      "name": "Subscription API",
+      "icon": "cash-sync",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/subscriptionapi"
+    },
+    {
+      "id": "userapi",
+      "name": "User API",
+      "icon": "account-multiple",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/userapi"
+    },
+    {
+      "id": "weatherapi",
+      "name": "Weather API",
+      "icon": "weather-partly-cloudy",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/weatherapi"
+    },
+    {
+      "id": "machinelearningdatasourceapi",
+      "name": "MachineLearningDataSource API",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/machinelearningdatasourceapi"
+    },
+    {
+      "id": "alertapi",
+      "name": "Alert API",
+      "icon": "sticker-alert",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/alertapi"
+    },
+    {
+      "id": "notificationapi",
+      "name": "Notification API",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/notificationapi"
+    },
+    {
+      "id": "auditapi",
+      "name": "Audit API",
+      "icon": "clipboard-text-clock",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/auditapi"
+    },
+    {
+      "id": "openvpnapi",
+      "name": "OpenVPN API",
+      "icon": "vpn",
+      "url": "https://api.herobalancer.dev/docs/openapi/v1/openvpnapi"
+    }
+  ],
+  "authorization": {
+    "oauth2": {
+      "client_id": "60bd9456-07fa-405f-8c92-2261d557f9df",
+      "response_type": "code",
+      "scope": "openid profile email",
+      "authority": "https://auth.herobalancer.dev"
+    }
+  },
+  "icons": {
+    "folder-root": "hexagon-multiple",
+    "warning": "alert"
+  }
+}

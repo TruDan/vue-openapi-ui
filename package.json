@@ -1,8 +1,8 @@
 {
-  "name": "vue-openapi-ui",
+  "name": "vue-openapi-ui-vite",
   "version": "0.0.1",
-  "description": "OpenApi UI Vue-er",
-  "productName": "OpenAPI UI",
+  "description": "OpenAPI Explorer in VueJS",
+  "productName": "Vue OpenAPI Explorer",
   "author": "Dan Spiteri <trudan97@gmail.com>",
   "private": true,
   "scripts": {
@@ -14,15 +14,12 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.13.6",
-    "axios": "^0.21.1",
-    "babel-plugin-syntax-jsx": "^6.18.0",
-    "babel-plugin-transform-vue-jsx": "^3.7.0",
-    "core-js": "^3.6.5",
+    "axios": "^0.27.2",
     "localforage": "^1.10.0",
     "oidc-client": "^1.11.5",
     "pinia": "^2.0.11",
     "quasar": "^2.6.6",
-    "swagger-client": "^3.18.4",
+    "swagger-client": "^3.18.5",
     "vue": "^3.0.0",
     "vue-i18n": "^9.2.0-beta.23",
     "vue-json-viewer": "3",
@@ -31,34 +28,22 @@
     "vue3-json-editor": "^1.1.5"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.13.14",
-    "@quasar/app-webpack": "^3.5.1",
+    "@intlify/vite-plugin-vue-i18n": "^3.3.1",
+    "@quasar/app-vite": "^1.0.0",
     "@quasar/quasar-app-extension-qmarkdown": "^2.0.0-beta.7",
     "@types/openapi-v3": "^3.0.0",
-    "@vue/babel-plugin-jsx": "^1.1.1",
+    "autoprefixer": "^10.4.2",
     "dotenv": "^16.0.0",
     "eslint": "^8.10.0",
-    "eslint-config-standard": "^17.0.0-1",
+    "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.19.1",
-    "eslint-plugin-n": "^14.0.0",
+    "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-vue": "^8.5.0",
-    "eslint-webpack-plugin": "^3.1.1",
     "push-dir": "^0.4.1"
   },
-  "browserslist": [
-    "last 10 Chrome versions",
-    "last 10 Firefox versions",
-    "last 4 Edge versions",
-    "last 7 Safari versions",
-    "last 8 Android versions",
-    "last 8 ChromeAndroid versions",
-    "last 8 FirefoxAndroid versions",
-    "last 10 iOS versions",
-    "last 5 Opera versions"
-  ],
   "engines": {
-    "node": ">= 12.22.1",
+    "node": "^18 || ^16 || ^14.19",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   }

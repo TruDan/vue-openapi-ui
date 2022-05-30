@@ -5,12 +5,11 @@ module.exports = {
   root: true,
 
   parserOptions: {
-    parser: '@babel/eslint-parser',
-    ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
-    sourceType: 'module' // Allows for the use of imports
+    ecmaVersion: '2022', // Allows for the parsing of modern ECMAScript features
   },
 
   env: {
+    node: true,
     browser: true,
     'vue/setup-compiler-macros': true
   },
@@ -27,7 +26,7 @@ module.exports = {
     // 'plugin:vue/vue3-strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
     // 'plugin:vue/vue3-recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
 
-    // 'standard'
+    //'standard'
 
   ],
 
@@ -68,7 +67,6 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
 
     'prefer-promise-reject-errors': 'off',
-    'vue/require-render-return': 'off',
 
     // allow debugger during development only
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'

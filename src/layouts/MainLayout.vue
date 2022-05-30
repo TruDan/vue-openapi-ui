@@ -96,13 +96,13 @@
 
 <script setup>
 import { computed, ref, watch, Teleport, onMounted, nextTick } from 'vue'
-import SNavigation from 'components/SNavigation'
+import SNavigation from 'components/SNavigation.vue'
 import useSettingsStore from 'stores/settings'
 import useUserstateStore from 'stores/userstate'
 import { useRoute } from 'vue-router'
 import { Dark, scroll } from 'quasar'
-import SResizeHandle from 'components/SResizeHandle'
-import SOauthAuthenticator from 'components/SOauthAuthenticator'
+import SResizeHandle from 'components/SResizeHandle.vue'
+import SOauthAuthenticator from 'components/SOauthAuthenticator.vue'
 
 const {
   getScrollTarget,

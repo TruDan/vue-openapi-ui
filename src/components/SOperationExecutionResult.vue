@@ -23,8 +23,8 @@
 
 import { defineProps, watch, onMounted, ref } from 'vue'
 import useUserstateStore from 'stores/userstate'
-import SHttpStatusCodeBadge from 'components/SHttpStatusCodeBadge'
-import ResponseViewer from 'components/ResponseViewer'
+import SHttpStatusCodeBadge from 'components/SHttpStatusCodeBadge.vue'
+import ResponseViewer from 'components/ResponseViewer.vue'
 
 const props = defineProps({
   spec: {

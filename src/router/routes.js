@@ -1,6 +1,6 @@
 import { RouterView } from 'vue-router'
-import MainLayout from 'layouts/MainLayout'
-import SpecLayout from 'layouts/SpecLayout'
+import MainLayout from 'layouts/MainLayout.vue'
+import SpecLayout from 'layouts/SpecLayout.vue'
 
 const routes = [
   {

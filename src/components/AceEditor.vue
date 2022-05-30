@@ -12,11 +12,10 @@
 
 <script setup>
 import { VAceEditor } from 'vue3-ace-editor'
-import 'ace-builds/webpack-resolver'
-import ace_modeJson from 'file-loader?esModule=false!ace-builds/src-noconflict/mode-json.js'
-import ace_themeLight from 'file-loader?esModule=false!ace-builds/src-noconflict/theme-chrome.js'
-import ace_themeDark from 'file-loader?esModule=false!ace-builds/src-noconflict/theme-one_dark.js'
-import ace_workerJsonUrl from 'file-loader?esModule=false!ace-builds/src-noconflict/worker-json.js'
+import 'ace-builds/src-noconflict/mode-json.js'
+import 'ace-builds/src-noconflict/theme-chrome.js'
+import 'ace-builds/src-noconflict/theme-one_dark.js'
+import 'ace-builds/src-noconflict/worker-json.js'
 import { computed, defineProps, defineEmits } from 'vue'
 import { useQuasar } from 'quasar'
 
@@ -33,10 +32,10 @@ ace.require('ace/ext/settings_statusbar')
 ace.require('ace/ext/settings_whitespace')
 ace.require('ace/keybinding/vscode')
 
-ace.config.setModuleUrl('ace/mode/json', ace_modeJson)
-ace.config.setModuleUrl('ace/theme/chrome', ace_themeLight)
-ace.config.setModuleUrl('ace/theme/one_dark', ace_themeDark)
-ace.config.setModuleUrl('ace/mode/json_worker', ace_workerJsonUrl)
+// ace.config.setModuleUrl('ace/mode/json', ace_modeJson)
+// ace.config.setModuleUrl('ace/theme/chrome', ace_themeLight)
+// ace.config.setModuleUrl('ace/theme/one_dark', ace_themeDark)
+// ace.config.setModuleUrl('ace/mode/json_worker', ace_workerJsonUrl)
 
 const props = defineProps({
   modelValue: {

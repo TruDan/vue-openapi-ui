@@ -28,8 +28,8 @@
 
 <script setup>
 import { defineProps, computed, ref, onUpdated, onMounted, defineEmits } from 'vue'
-import SJsonSchemaViewer from 'components/SJsonSchemaViewer'
-import SJsonViewer from 'components/SJsonViewer'
+import SJsonSchemaViewer from 'components/SJsonSchemaViewer.vue'
+import SJsonViewer from 'components/SJsonViewer.vue'
 
 const props = defineProps({
   response: Object

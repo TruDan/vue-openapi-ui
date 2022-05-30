@@ -162,7 +162,7 @@ import { computed, onMounted, onUpdated, ref, watch, nextTick } from 'vue'
 import useSettingsStore from 'stores/settings'
 import useOpenapiStore from 'stores/openapi'
 import useUserstateStore from 'stores/userstate'
-import SOperationBadge from 'components/SOperationBadge'
+import SOperationBadge from 'components/SOperationBadge.vue'
 
 const root = ref(null)
 

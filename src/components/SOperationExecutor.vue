@@ -78,11 +78,11 @@
 
 import useUserstateStore from 'stores/userstate'
 import { computed, defineEmits, defineProps, onMounted, reactive, ref, watch } from 'vue'
-import SInput from 'components/SInput'
-import SOperationBadge from 'components/SOperationBadge'
+import SInput from 'components/SInput.vue'
+import SOperationBadge from 'components/SOperationBadge.vue'
 import useOpenapiStore from 'stores/openapi'
 import { useQuasar } from 'quasar'
-import AceEditor from 'components/AceEditor'
+import AceEditor from 'components/AceEditor.vue'
 
 const userstate = useUserstateStore()
 const openapi = useOpenapiStore()

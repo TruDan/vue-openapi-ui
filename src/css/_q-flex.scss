@@ -1,6 +1,6 @@
 // $
-@import "~quasar/src/css/helpers/string";
-@import "~quasar/src/css/helpers/math";
+@import "quasar/src/css/helpers/string";
+@import "quasar/src/css/helpers/math";
 
 @each $nameRaw, $size in $sizes {
   $name: -#{$nameRaw};

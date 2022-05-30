@@ -111,14 +111,14 @@
 import { useRoute } from 'vue-router'
 import { computed, inject, ref, watch } from 'vue'
 import JsonViewer from 'vue-json-viewer'
-import SJsonSchemaViewer from 'components/SJsonSchemaViewer'
-import SJsonViewer from 'components/SJsonViewer'
-import SHttpStatusCodeBadge from 'components/SHttpStatusCodeBadge'
-import SPathOperationResponse from 'components/SPathOperationResponse'
-import SOperationExecutionResult from 'components/SOperationExecutionResult'
-import SOperationBadge from 'components/SOperationBadge'
+import SJsonSchemaViewer from 'components/SJsonSchemaViewer.vue'
+import SJsonViewer from 'components/SJsonViewer.vue'
+import SHttpStatusCodeBadge from 'components/SHttpStatusCodeBadge.vue'
+import SPathOperationResponse from 'components/SPathOperationResponse.vue'
+import SOperationExecutionResult from 'components/SOperationExecutionResult.vue'
+import SOperationBadge from 'components/SOperationBadge.vue'
 import useUserstateStore from 'stores/userstate'
-import SOperationExecutor from 'components/SOperationExecutor'
+import SOperationExecutor from 'components/SOperationExecutor.vue'
 
 const userstate = useUserstateStore()
 const route = useRoute()

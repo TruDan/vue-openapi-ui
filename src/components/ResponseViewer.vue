@@ -40,8 +40,8 @@
 </template>
 
 <script setup>
-import AceEditor from 'components/AceEditor'
-import SJsonViewer from 'components/SJsonViewer'
+import AceEditor from 'components/AceEditor.vue'
+import SJsonViewer from 'components/SJsonViewer.vue'
 import { ref, defineProps, computed } from 'vue'
 
 const props = defineProps({
