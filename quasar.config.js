@@ -11,6 +11,7 @@
 const { configure } = require('quasar/wrappers')
 const path = require('path')
 const fs = require('fs')
+const { createHtmlPlugin } = require('vite-plugin-html')
 
 function resolveEnvFile(environment) {
   if(environment && environment.length && fs.existsSync(`./.env.${environment}`))
@@ -96,7 +97,19 @@ module.exports = configure(function (ctx) {
 
           // you need to set i18n resource including paths !
           include: path.resolve(__dirname, './src/i18n/**')
-        }]
+        }],
+        [createHtmlPlugin({
+          minify: false,
+          pages: [
+            {
+            },
+            {
+              entry: './oauth2-callback.js',
+              filename: 'oauth2-callback.html',
+              template: 'oauth2-callback.html'
+            }
+          ]
+        })]
       ]
     },
 

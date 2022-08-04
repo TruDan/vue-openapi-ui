@@ -22,6 +22,9 @@ export default boot(async () => {
   }
 
   userstate.$subscribe((mutation, state) => {
-    localStorage.setItem('userstate', JSON.stringify(state));
+    localStorage.setItem('userstate', JSON.stringify({
+      ...state,
+      tryModeExecutions: []
+    }));
   });
 })
